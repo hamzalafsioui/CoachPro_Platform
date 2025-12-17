@@ -100,7 +100,13 @@ function loginUser($email, $password)
     global $conn;
 
     try {
-        $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+    
+        $stmt = $conn->prepare("
+            SELECT u.*, r.name as role_name 
+            FROM users u 
+            JOIN roles r ON u.role_id = r.id 
+            WHERE u.email = ?
+        ");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -108,9 +114,15 @@ function loginUser($email, $password)
         $stmt->close();
 
         if ($user && password_verify($password, $user['password'])) {
+            // Set sessions
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['role'] = $user['role_name'];
+
+            // set sessions user
             $_SESSION['user'] = [
                 'id' => $user['id'],
                 'role_id' => $user['role_id'],
+                'role_name' => $user['role_name'],
                 'firstname' => $user['firstname'],
                 'lastname' => $user['lastname'],
                 'email' => $user['email']
