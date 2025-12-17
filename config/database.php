@@ -1,5 +1,4 @@
 <?php
-// config/database.php
 
 // Database credentials
 $host = 'localhost';
