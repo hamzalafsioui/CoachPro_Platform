@@ -1,5 +1,3 @@
-
-
 /* Font Families */
 * {
   font-family: "Inter", sans-serif;
@@ -8,7 +6,6 @@
 .font-outfit {
   font-family: "Outfit", sans-serif;
 }
-
 
 /*=============(- Background Animations -)==================== */
 
@@ -31,8 +28,6 @@
   }
 }
 
-
-   
 /* ================(- Element Animations -)================= */
 
 /* Floating Animation */
