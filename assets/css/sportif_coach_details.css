@@ -1,0 +1,74 @@
+.hero-banner {
+  background-image: linear-gradient(
+    to bottom,
+    rgba(15, 23, 42, 0.4),
+    rgba(15, 23, 42, 1)
+  );
+}
+
+.profile-avatar-lg {
+  box-shadow: 0 0 0 8px rgba(30, 41, 59, 1);
+}
+
+.tab-btn {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.tab-btn::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: #3b82f6;
+  transition: width 0.3s ease;
+}
+
+.tab-btn.active {
+  color: #3b82f6;
+}
+
+.tab-btn.active::after {
+  width: 100%;
+}
+
+.stat-item {
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-item:last-child {
+  border-right: none;
+}
+
+.schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.5rem;
+}
+
+.time-slot {
+  transition: all 0.2s ease;
+}
+
+.time-slot:hover:not(.disabled) {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.4);
+  transform: translateY(-2px);
+}
+
+.time-slot.selected {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.review-card {
+  border-left: 2px solid rgba(59, 130, 246, 0.3);
+}
+
+/* Sticky booking sidebar/bottom bar */
+.booking-panel {
+  z-index: 40;
+}
