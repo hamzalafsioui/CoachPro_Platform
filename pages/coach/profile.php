@@ -1,12 +1,28 @@
 <?php
 session_start();
-// Mock data
+require_once '../../functions/coach.functions.php';
+
+// check is user login
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../../index.php");
+    exit();
+}
+
+$coach_profile = getCoachProfile($_SESSION["user_id"]);
+
+// check is data Exists
+if (!$coach_profile) {
+    // Handle error or redirect
+    die("Coach not found.");
+}
+
 $coach = [
-    'name' => 'Alex Morgan',
-    'email' => 'alex.morgan@example.com',
-    'bio' => 'Professional football player and certified fitness coach with over 10 years of experience in high-intensity training and sports conditioning.',
-    'specialties' => 'HIIT, Strength Training, Cardio',
-    'phone' => '+1 234 567 8900'
+    'name' => ($coach_profile['firstname'] ?? '') . ' ' . ($coach_profile['lastname'] ?? ''),
+    'email' => $coach_profile['email'] ?? '',
+    'bio' => $coach_profile['bio'] ?? 'No bio yet.',
+    'specialties' => 'HIIT, Strength Training, Cardio', // Not Exist in DB => hardcoded 
+    'phone' => $coach_profile['phone'] ?? '+212xxxxxxxx',
+    'experience' => $coach_profile['experience_years'] ?? 0
 ];
 ?>
 
@@ -86,7 +102,7 @@ $coach = [
                             Personal Information
                         </h3>
 
-                        <form action="" method="POST" class="space-y-6">
+                        <form action="../../actions/profile/update_coach_profile.php" method="POST" class="space-y-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-gray-400 text-sm font-medium mb-2">Full Name</label>
@@ -94,7 +110,7 @@ $coach = [
                                 </div>
                                 <div>
                                     <label class="block text-gray-400 text-sm font-medium mb-2">Email Address</label>
-                                    <input type="email" name="email" value="<?php echo htmlspecialchars($coach['email']); ?>" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white">
+                                    <input type="email" name="email" value="<?php echo htmlspecialchars($coach['email']); ?>" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white" readonly>
                                 </div>
                                 <div>
                                     <label class="block text-gray-400 text-sm font-medium mb-2">Phone Number</label>
@@ -102,23 +118,24 @@ $coach = [
                                 </div>
                                 <div>
                                     <label class="block text-gray-400 text-sm font-medium mb-2">Experience (Years)</label>
-                                    <input type="number" name="experience" value="10" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white">
+                                    <input type="number" name="experience" value="<?php echo htmlspecialchars($coach['experience']); ?>" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white">
                                 </div>
                             </div>
 
                             <div>
                                 <label class="block text-gray-400 text-sm font-medium mb-2">Specialties</label>
-                                <input type="text" name="specialties" value="<?php echo htmlspecialchars($coach['specialties']); ?>" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white">
-                                <p class="text-xs text-gray-500 mt-2">Separate multiple specialties with commas</p>
+                                <input type="text" name="specialties" value="<?php echo htmlspecialchars($coach['specialties']); ?>" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white" readonly>
+                                <p class="text-xs text-gray-500 mt-2">Specialties are currently managed by the administration.</p>
                             </div>
 
                             <div>
                                 <label class="block text-gray-400 text-sm font-medium mb-2">Bio</label>
                                 <textarea name="bio" rows="4" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white"><?php echo htmlspecialchars($coach['bio']); ?></textarea>
+
                             </div>
 
                             <div class="pt-4 flex justify-end">
-                                <button type="button" class="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white px-8 py-3 rounded-xl font-medium shadow-lg shadow-blue-500/25 transition-all transform hover:scale-105">
+                                <button type="submit" class="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white px-8 py-3 rounded-xl font-medium shadow-lg shadow-blue-500/25 transition-all transform hover:scale-105">
                                     Save Changes
                                 </button>
                             </div>
@@ -132,26 +149,26 @@ $coach = [
                             Security
                         </h3>
 
-                        <form action="" method="POST" class="space-y-6">
+                        <form action="../../actions/profile/update_password.php" method="POST" class="space-y-6">
                             <div class="space-y-4">
                                 <div>
                                     <label class="block text-gray-400 text-sm font-medium mb-2">Current Password</label>
-                                    <input type="password" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white">
+                                    <input type="password" name="current_password" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white" required>
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <label class="block text-gray-400 text-sm font-medium mb-2">New Password</label>
-                                        <input type="password" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white">
+                                        <input type="password" name="new_password" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white" required>
                                     </div>
                                     <div>
                                         <label class="block text-gray-400 text-sm font-medium mb-2">Confirm New Password</label>
-                                        <input type="password" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white">
+                                        <input type="password" name="confirm_password" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white" required>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="pt-4 flex justify-end">
-                                <button type="button" class="bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded-xl font-medium transition-all">
+                                <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded-xl font-medium transition-all">
                                     Update Password
                                 </button>
                             </div>
