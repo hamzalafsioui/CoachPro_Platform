@@ -32,14 +32,19 @@ if (!empty($errors)) {
     exit();
 }
 
-// Use the loginUser function from auth.functions.php
 $result = loginUser($email, $password);
 
 if ($result['success']) {
     $_SESSION['success'] = $result['message'];
-    header('Location: ../../index.php');
+
+    if ($_SESSION['role'] === "coach") {
+        header('Location: ../../pages/coach/dashboard.php');
+    } elseif ($_SESSION['role'] === "sportif") {
+        header('Location: ../../pages/sportif/dashboard.php');
+    }
 } else {
     $_SESSION['error'] = $result['message'];
     header('Location: ../../pages/auth/login.php');
 }
 exit();
+
