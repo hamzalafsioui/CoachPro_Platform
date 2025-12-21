@@ -32,21 +32,53 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-function handleAction(action, id) {
+async function handleAction(action, id) {
   if (confirm(`Are you sure you want to ${action} this reservation?`)) {
-    // AJAX Not Implemented Yet
+    try {
+      const response = await fetch("../../actions/reservations/update.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: id,
+          action: action,
+        }),
+      });
 
-    // Visual feedback
-    const card = document.querySelector(`.reservation-card[data-id="${id}"]`);
-    if (card && action === "cancel") {
-      card.style.opacity = "0.5";
-      card.style.pointerEvents = "none";
-      const badge = card.querySelector(".status-badge");
-      badge.className = "status-badge status-cancelled";
-      badge.textContent = "Cancelled";
+      const result = await response.json();
+
+      if (result.success) {
+        // Visual feedback
+        const card = document.querySelector(
+          `.reservation-card[data-id="${id}"]`
+        );
+        if (card && action === "cancel") {
+          card.style.opacity = "0.5";
+          card.style.pointerEvents = "none";
+          card.setAttribute("data-status", "cancelled");
+          const badge = card.querySelector(".status-badge");
+          badge.className = "status-badge status-cancelled";
+          badge.textContent = "Cancelled";
+
+          // Hide cancel button
+          const actionArea = card.querySelector(".flex.items-center.gap-2");
+          if (actionArea) {
+            actionArea.innerHTML = `
+                <button class="flex-1 md:flex-none px-4 py-2 bg-gray-800 text-gray-500 rounded-lg text-sm font-medium cursor-not-allowed">
+                    Details
+                </button>
+            `;
+          }
+        }
+        alert(`Reservation ${action}ed successfully!`);
+      } else {
+        alert("Error: " + result.message);
+      }
+    } catch (error) {
+      console.error("Error updating reservation:", error);
+      alert("An unexpected error occurred.");
     }
-
-    alert(`Reservation ${action}led successfully!`);
   }
 }
 
