@@ -1,16 +1,22 @@
 <?php
 session_start();
-// Mock data
-$coach_name = "Ali Mohammed";
-$availability = [
-    'monday' => ['active' => true, 'slots' => [['09:00', '12:00'], ['14:00', '17:00']]],
-    'tuesday' => ['active' => true, 'slots' => [['10:00', '18:00']]],
-    'wednesday' => ['active' => false, 'slots' => []],
-    'thursday' => ['active' => true, 'slots' => [['09:00', '12:00']]],
-    'friday' => ['active' => true, 'slots' => [['09:00', '15:00']]],
-    'saturday' => ['active' => false, 'slots' => []],
-    'sunday' => ['active' => false, 'slots' => []],
-];
+require_once '../../functions/availability.functions.php';
+require_once '../../functions/coach.functions.php';
+
+if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'coach') {
+    header('Location: ../../index.php');
+    exit();
+}
+
+$userId = $_SESSION['user']['id'];
+$coach_name = $_SESSION['user']['firstname'] . ' ' . $_SESSION['user']['lastname'];
+$coachId = getCoachIdByUserId($userId);
+
+if (!$coachId) {
+    die("Coach profile not found.");
+}
+
+$availability = getCoachRecurringSchedule($coachId);
 ?>
 
 <!DOCTYPE html>
