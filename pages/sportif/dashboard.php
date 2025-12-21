@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../../functions/sportif.functions.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user'])) {
@@ -8,31 +9,13 @@ if (!isset($_SESSION['user'])) {
 }
 
 $user = $_SESSION['user'];
+$sportif_id = $user['id'];
 
-// Mock Data
-$upcoming_session = [
-    'coach' => 'Coach Alex',
-    'type' => 'Personal Training',
-    'date' => 'Today',
-    'time' => '14:00 - 15:00',
-    'avatar' => 'CA'
-];
-
-$weekly_activity = [
-    ['day' => 'M', 'height' => '40%'],
-    ['day' => 'T', 'height' => '70%'],
-    ['day' => 'W', 'height' => '30%'],
-    ['day' => 'T', 'height' => '85%'],
-    ['day' => 'F', 'height' => '60%'],
-    ['day' => 'S', 'height' => '90%'],
-    ['day' => 'S', 'height' => '20%'],
-];
-
-$recent_activities = [
-    ['title' => 'HIIT Blast', 'date' => 'Yesterday', 'coach' => 'Sarah M.'],
-    ['title' => 'Yoga Flow', 'date' => '2 days ago', 'coach' => 'Emma W.'],
-    ['title' => 'Cardio Run', 'date' => '3 days ago', 'coach' => 'Self']
-];
+// Get real data from functions
+$stats = getSportifStats($sportif_id);
+$upcoming_session = getSportifUpcomingSession($sportif_id);
+$recent_activities = getSportifRecentActivity($sportif_id);
+$weekly_activity = getSportifWeeklyActivity();
 ?>
 
 <!DOCTYPE html>
@@ -136,9 +119,9 @@ $recent_activities = [
                     <div class="absolute right-0 top-0 w-32 h-32 bg-blue-500/10 rounded-full -mr-10 -mt-10 group-hover:scale-110 transition-transform"></div>
                     <div>
                         <p class="text-gray-400 text-sm font-medium uppercase tracking-wide">Workouts</p>
-                        <h3 class="text-3xl font-bold text-white mt-1">12</h3>
+                        <h3 class="text-3xl font-bold text-white mt-1"><?php echo $stats['workouts']; ?></h3>
                         <p class="text-green-400 text-xs mt-2 flex items-center gap-1">
-                            <i class="fas fa-arrow-up"></i> +2 this week
+                            <i class="fas fa-arrow-up"></i> Keep it up!
                         </p>
                     </div>
                     <div class="metric-circle">
@@ -156,7 +139,7 @@ $recent_activities = [
                     <div class="absolute right-0 top-0 w-32 h-32 bg-orange-500/10 rounded-full -mr-10 -mt-10 group-hover:scale-110 transition-transform"></div>
                     <div>
                         <p class="text-gray-400 text-sm font-medium uppercase tracking-wide">Calories</p>
-                        <h3 class="text-3xl font-bold text-white mt-1">4,250</h3>
+                        <h3 class="text-3xl font-bold text-white mt-1"><?php echo $stats['calories']; ?></h3>
                         <p class="text-green-400 text-xs mt-2 flex items-center gap-1">
                             <i class="fas fa-arrow-up"></i> +12% vs last week
                         </p>
@@ -176,7 +159,7 @@ $recent_activities = [
                     <div class="absolute right-0 top-0 w-32 h-32 bg-purple-500/10 rounded-full -mr-10 -mt-10 group-hover:scale-110 transition-transform"></div>
                     <div>
                         <p class="text-gray-400 text-sm font-medium uppercase tracking-wide">Active Minutes</p>
-                        <h3 class="text-3xl font-bold text-white mt-1">340</h3>
+                        <h3 class="text-3xl font-bold text-white mt-1"><?php echo $stats['active_minutes']; ?></h3>
                         <p class="text-gray-500 text-xs mt-2">Target: 450 min</p>
                     </div>
                     <div class="metric-circle">
@@ -219,34 +202,45 @@ $recent_activities = [
                     <!-- Upcoming Session -->
                     <div class="upcoming-card rounded-2xl p-1 relative overflow-hidden">
                         <div class="glass-panel p-6 rounded-xl relative z-10">
-                            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center text-xl font-bold text-white shadow-lg">
-                                        <?php echo $upcoming_session['avatar']; ?>
+                            <?php if ($upcoming_session): ?>
+                                <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center text-xl font-bold text-white shadow-lg">
+                                            <?php echo htmlspecialchars($upcoming_session['avatar']); ?>
+                                        </div>
+                                        <div class="text-center md:text-left">
+                                            <p class="text-blue-400 text-xs font-bold uppercase tracking-wide mb-1">Up Next</p>
+                                            <h3 class="text-xl font-bold text-white"><?php echo htmlspecialchars($upcoming_session['type']); ?></h3>
+                                            <p class="text-gray-400 text-sm">with <?php echo htmlspecialchars($upcoming_session['coach']); ?></p>
+                                        </div>
                                     </div>
-                                    <div class="text-center md:text-left">
-                                        <p class="text-blue-400 text-xs font-bold uppercase tracking-wide mb-1">Up Next</p>
-                                        <h3 class="text-xl font-bold text-white"><?php echo $upcoming_session['type']; ?></h3>
-                                        <p class="text-gray-400 text-sm">with <?php echo $upcoming_session['coach']; ?></p>
-                                    </div>
-                                </div>
 
-                                <div class="flex items-center gap-8 bg-black/20 px-6 py-3 rounded-xl border border-white/5">
-                                    <div class="text-center">
-                                        <p class="text-gray-400 text-xs uppercase">Time</p>
-                                        <p class="text-white font-bold"><?php echo $upcoming_session['time']; ?></p>
+                                    <div class="flex items-center gap-8 bg-black/20 px-6 py-3 rounded-xl border border-white/5">
+                                        <div class="text-center">
+                                            <p class="text-gray-400 text-xs uppercase">Time</p>
+                                            <p class="text-white font-bold"><?php echo htmlspecialchars($upcoming_session['time']); ?></p>
+                                        </div>
+                                        <div class="w-px h-8 bg-gray-700"></div>
+                                        <div class="text-center">
+                                            <p class="text-gray-400 text-xs uppercase">Date</p>
+                                            <p class="text-white font-bold"><?php echo htmlspecialchars($upcoming_session['date']); ?></p>
+                                        </div>
                                     </div>
-                                    <div class="w-px h-8 bg-gray-700"></div>
-                                    <div class="text-center">
-                                        <p class="text-gray-400 text-xs uppercase">Date</p>
-                                        <p class="text-white font-bold"><?php echo $upcoming_session['date']; ?></p>
-                                    </div>
-                                </div>
 
-                                <button class="px-6 py-2 bg-white text-gray-900 rounded-lg font-bold text-sm hover:bg-gray-100 transition-colors shadow-lg shadow-white/10">
-                                    Join Now
-                                </button>
-                            </div>
+                                    <button class="px-6 py-2 bg-white text-gray-900 rounded-lg font-bold text-sm hover:bg-gray-100 transition-colors shadow-lg shadow-white/10">
+                                        Join Now
+                                    </button>
+                                </div>
+                            <?php else: ?>
+                                <div class="flex flex-col items-center justify-center py-4 text-center">
+                                    <div class="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center mb-3">
+                                        <i class="fas fa-calendar-times text-gray-500"></i>
+                                    </div>
+                                    <h3 class="text-white font-bold">No Upcoming Sessions</h3>
+                                    <p class="text-gray-500 text-sm">Book a session with a coach to get started!</p>
+                                    <a href="coaches.php" class="mt-4 text-blue-400 text-sm font-medium hover:underline">Find a Coach</a>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -257,12 +251,16 @@ $recent_activities = [
                     <div class="glass-panel p-6 rounded-2xl">
                         <h3 class="text-lg font-bold text-white mb-6">Recent Activity</h3>
                         <div class="space-y-6">
-                            <?php foreach ($recent_activities as $index => $activity): ?>
-                                <div class="timeline-item pb-6 <?php echo $index === count($recent_activities) - 1 ? 'border-l-0' : ''; ?>">
-                                    <h4 class="text-white font-medium text-sm"><?php echo $activity['title']; ?></h4>
-                                    <p class="text-gray-500 text-xs mt-1"><?php echo $activity['date']; ?> &bull; <?php echo $activity['coach']; ?></p>
-                                </div>
-                            <?php endforeach; ?>
+                            <?php if (empty($recent_activities)): ?>
+                                <p class="text-gray-500 text-sm text-center py-4">No recent activity found.</p>
+                            <?php else: ?>
+                                <?php foreach ($recent_activities as $index => $activity): ?>
+                                    <div class="timeline-item pb-6 <?php echo $index === count($recent_activities) - 1 ? 'border-l-0' : ''; ?>">
+                                        <h4 class="text-white font-medium text-sm"><?php echo htmlspecialchars($activity['title']); ?></h4>
+                                        <p class="text-gray-500 text-xs mt-1"><?php echo htmlspecialchars($activity['date']); ?> &bull; <?php echo htmlspecialchars($activity['coach']); ?></p>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
                         <button class="w-full py-2 text-blue-400 text-sm font-medium hover:text-blue-300 transition-colors mt-2">
                             View All History
