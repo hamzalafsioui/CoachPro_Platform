@@ -9,10 +9,10 @@ document.addEventListener("DOMContentLoaded", function () {
   let originalValues = {};
 
   editBtn.addEventListener("click", function () {
-    // Enable inputs
+    
     formInputs.forEach((input) => {
       if (input.name !== "email") {
-        // Optional: Keep email read-only
+        
         originalValues[input.name] = input.value;
         input.disabled = false;
       }
@@ -40,27 +40,95 @@ document.addEventListener("DOMContentLoaded", function () {
     editBtn.classList.remove("hidden");
   });
 
-  // Handle form submission (Mock)
+  // Handle form submission (AJAX)
   const profileForm = document.getElementById("profileForm");
-  profileForm.addEventListener("submit", function (e) {
+  profileForm.addEventListener("submit", async function (e) {
     e.preventDefault();
 
-    // Show loading state or similar feedback here
+    const formData = new FormData(profileForm);
+    const saveBtn = document.getElementById("saveProfileBtn");
+    const originalText = saveBtn.innerHTML;
 
-    // Mock save
-    setTimeout(() => {
-      alert("Profile updated successfully!");
+    try {
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
 
-      // Disable inputs
-      formInputs.forEach((input) => {
-        input.disabled = true;
+      const response = await fetch("../../actions/sportif/update_profile.php", {
+        method: "POST",
+        body: formData,
       });
 
-      // Toggle buttons
-      actionButtons.classList.add("hidden");
-      editBtn.classList.remove("hidden");
-    }, 500);
+      const result = await response.json();
+
+      if (result.success) {
+        alert("Profile updated successfully!");
+
+        // Update the display name in the header area
+        const headerName = document.querySelector(".text-3xl.font-outfit");
+        if (headerName) {
+          headerName.textContent =
+            formData.get("firstname") + " " + formData.get("lastname");
+        }
+
+        // Disable inputs
+        formInputs.forEach((input) => {
+          input.disabled = true;
+        });
+
+        // Toggle buttons
+        actionButtons.classList.add("hidden");
+        editBtn.classList.remove("hidden");
+      } else {
+        alert("Error: " + result.message);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An unexpected error occurred.");
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = originalText;
+    }
   });
+
+  // Handle Account Deletion
+  const deleteBtn = document.querySelector(".bg-red-500\\/10");
+  if (deleteBtn) {
+    deleteBtn.addEventListener("click", async function () {
+      if (
+        confirm(
+          "Are you SURE you want to delete your account? This action cannot be undone and all your reservations will be cancelled."
+        )
+      ) {
+        try {
+          deleteBtn.disabled = true;
+          deleteBtn.textContent = "Deleting...";
+
+          const response = await fetch(
+            "../../actions/sportif/delete_account.php",
+            {
+              method: "POST",
+            }
+          );
+
+          const result = await response.json();
+
+          if (result.success) {
+            alert("Account deleted. We're sorry to see you go!");
+            window.location.href = "../../index.php";
+          } else {
+            alert("Error: " + result.message);
+            deleteBtn.disabled = false;
+            deleteBtn.textContent = "Delete Account";
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("An unexpected error occurred.");
+          deleteBtn.disabled = false;
+          deleteBtn.textContent = "Delete Account";
+        }
+      }
+    });
+  }
 });
 
 function toggleSidebar() {
