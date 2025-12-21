@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../../functions/coach.functions.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user'])) {
@@ -9,54 +10,9 @@ if (!isset($_SESSION['user'])) {
 
 $user = $_SESSION['user'];
 
-// Mock Coaches Data
-$coaches = [
-    [
-        'id' => 1,
-        'name' => 'Coach Alex Doe',
-        'rating' => 4.8,
-        'reviews' => 124,
-        'specialties' => ['Personal Training', 'Crossfit'],
-        'bio' => 'Certified personal trainer with 5 years of experience helping people achieve their fitness goals.',
-        'image' => 'fas fa-user-ninja'
-    ],
-    [
-        'id' => 2,
-        'name' => 'Sarah Miller',
-        'rating' => 4.9,
-        'reviews' => 89,
-        'specialties' => ['Yoga', 'Pilates', 'Meditation'],
-        'bio' => 'Passionate yoga instructor focused on mindfulness and flexibility improving.',
-        'image' => 'fas fa-leaf'
-    ],
-    [
-        'id' => 3,
-        'name' => 'Mike Tyson (Not that one)',
-        'rating' => 4.7,
-        'reviews' => 56,
-        'specialties' => ['Boxing', 'HIIT'],
-        'bio' => 'High intensity boxing coach that will push you to your absolute limits.',
-        'image' => 'fas fa-fist-raised'
-    ],
-    [
-        'id' => 4,
-        'name' => 'Emma Watson',
-        'rating' => 5.0,
-        'reviews' => 210,
-        'specialties' => ['Nutrition', 'Wellness', 'Personal Training'],
-        'bio' => 'Holistic approach to health combining fitness with proper nutrition guidance.',
-        'image' => 'fas fa-apple-alt'
-    ],
-    [
-        'id' => 5,
-        'name' => 'John Wick',
-        'rating' => 4.6,
-        'reviews' => 45,
-        'specialties' => ['Self Defense', 'Judo'],
-        'bio' => 'Focus.',
-        'image' => 'fas fa-user-shield'
-    ],
-];
+// Get dynamic data from DB
+$coaches = getAllCoachesWithDetails();
+$sports = getAllSports();
 ?>
 
 <!DOCTYPE html>
@@ -157,12 +113,11 @@ $coaches = [
                 <div class="w-full md:w-auto">
                     <select id="specialtyFilter" class="w-full bg-gray-800 text-white border-none rounded-xl py-3 px-6 focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer">
                         <option value="all">All Specialties</option>
-                        <option value="personal training">Personal Training</option>
-                        <option value="yoga">Yoga</option>
-                        <option value="pilates">Pilates</option>
-                        <option value="hiit">HIIT</option>
-                        <option value="boxing">Boxing</option>
-                        <option value="nutrition">Nutrition</option>
+                        <?php foreach ($sports as $sport): ?>
+                            <option value="<?php echo htmlspecialchars(strtolower($sport['name'])); ?>">
+                                <?php echo htmlspecialchars($sport['name']); ?>
+                            </option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
             </div>
