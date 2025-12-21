@@ -120,22 +120,52 @@ function saveCoachAvailability(int $coachId, array $schedule): bool
 
     try {
         // Delete existing recurring slots for this coach
-        $deleteSql = "DELETE FROM coach_recurring_slots WHERE coach_id = ?";
-        $stmt = $conn->prepare($deleteSql);
+        $deleteRecurringSql = "DELETE FROM coach_recurring_slots WHERE coach_id = ?";
+        $stmt = $conn->prepare($deleteRecurringSql);
         $stmt->bind_param("i", $coachId);
         $stmt->execute();
 
-        // Insert new slots
-        $insertSql = "INSERT INTO coach_recurring_slots (coach_id, day_of_week, start_time, end_time) VALUES (?, ?, ?, ?)";
-        $stmt = $conn->prepare($insertSql);
+        // Delete future availabilities for this coach
+        $deleteFutureSql = "DELETE FROM availabilities WHERE coach_id = ? AND date >= CURRENT_DATE";
+        $stmt = $conn->prepare($deleteFutureSql);
+        $stmt->bind_param("i", $coachId);
+        $stmt->execute();
 
+        // Prepare insert statements
+        $insertRecurringSql = "INSERT INTO coach_recurring_slots (coach_id, day_of_week, start_time, end_time) VALUES (?, ?, ?, ?)";
+        $stmtRecurring = $conn->prepare($insertRecurringSql);
+
+        $insertAvailabilitySql = "INSERT INTO availabilities (coach_id, date, start_time, end_time, is_available) VALUES (?, ?, ?, ?, 1)";
+        $stmtAvailability = $conn->prepare($insertAvailabilitySql);
+
+        // Insert new recurring slots
         foreach ($schedule as $day => $data) {
             if ($data['active'] && !empty($data['slots'])) {
                 foreach ($data['slots'] as $slot) {
                     $startTime = $slot[0];
                     $endTime = $slot[1];
-                    $stmt->bind_param("isss", $coachId, $day, $startTime, $endTime);
-                    $stmt->execute();
+                    $stmtRecurring->bind_param("isss", $coachId, $day, $startTime, $endTime);
+                    $stmtRecurring->execute();
+                }
+            }
+        }
+
+        // Generate dates for next 30 days and insert into availabilities
+        $begin = new DateTime();
+        $end = new DateTime();
+        $end->modify('+30 days');
+        $interval = new DateInterval('P1D');
+        $daterange = new DatePeriod($begin, $interval, $end);
+
+        foreach ($daterange as $date) {
+            $dayOfWeek = strtolower($date->format('l'));
+            if (isset($schedule[$dayOfWeek]) && $schedule[$dayOfWeek]['active'] && !empty($schedule[$dayOfWeek]['slots'])) {
+                $dateString = $date->format('Y-m-d');
+                foreach ($schedule[$dayOfWeek]['slots'] as $slot) {
+                    $startTime = $slot[0];
+                    $endTime = $slot[1];
+                    $stmtAvailability->bind_param("isss", $coachId, $dateString, $startTime, $endTime);
+                    $stmtAvailability->execute();
                 }
             }
         }
