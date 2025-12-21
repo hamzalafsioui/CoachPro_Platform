@@ -116,7 +116,35 @@ function saveCoachAvailability(int $coachId, array $schedule): bool
 {
     global $conn;
 
+    $conn->begin_transaction();
 
+    try {
+        // Delete existing recurring slots for this coach
+        $deleteSql = "DELETE FROM coach_recurring_slots WHERE coach_id = ?";
+        $stmt = $conn->prepare($deleteSql);
+        $stmt->bind_param("i", $coachId);
+        $stmt->execute();
 
-    return false;
+        // Insert new slots
+        $insertSql = "INSERT INTO coach_recurring_slots (coach_id, day_of_week, start_time, end_time) VALUES (?, ?, ?, ?)";
+        $stmt = $conn->prepare($insertSql);
+
+        foreach ($schedule as $day => $data) {
+            if ($data['active'] && !empty($data['slots'])) {
+                foreach ($data['slots'] as $slot) {
+                    $startTime = $slot[0];
+                    $endTime = $slot[1];
+                    $stmt->bind_param("isss", $coachId, $day, $startTime, $endTime);
+                    $stmt->execute();
+                }
+            }
+        }
+
+        $conn->commit();
+        return true;
+    } catch (Exception $e) {
+        $conn->rollback();
+        error_log("Error saving coach availability: " . $e->getMessage());
+        return false;
+    }
 }
