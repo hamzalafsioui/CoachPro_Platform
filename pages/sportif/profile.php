@@ -1,5 +1,8 @@
 <?php
 session_start();
+require_once __DIR__ . '/../../functions/auth.functions.php';
+require_once __DIR__ . '/../../functions/sportif.functions.php';
+require_once __DIR__ . '/../../functions/user.functions.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user'])) {
@@ -7,13 +10,14 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-$user = $_SESSION['user'];
+$userId = $_SESSION['user']['id'];
 
-// Mock stats
+$user = getUserById($userId);
+// Stats
+$sportifStats = getSportifStats($userId);
 $stats = [
-    'completed_sessions' => 12,
-    'upcoming_sessions' => 3,
-    'total_spent' => '$450'
+    'completed_sessions' => $sportifStats['workouts'],
+    'upcoming_sessions' => getSportifUpcomingSession($userId) ? 1 : 0, 
 ];
 ?>
 
@@ -165,7 +169,7 @@ $stats = [
                                 </div>
                                 <div class="md:col-span-2">
                                     <label class="block text-sm font-medium text-gray-400 mb-2">Phone Number</label>
-                                    <input type="tel" name="phone" value="" placeholder="+1 (555) 000-0000" class="form-input w-full px-4 py-3 rounded-xl text-white" disabled>
+                                    <input type="tel" name="phone" value="<?php echo htmlspecialchars($user['phone'] ?? ''); ?>" placeholder="+1 (555) 000-0000" class="form-input w-full px-4 py-3 rounded-xl text-white" disabled>
                                 </div>
                             </div>
                         </form>
