@@ -43,7 +43,7 @@ foreach ($raw_availabilities as $row) {
 
 // Sort by date key
 ksort($availability_by_date);
-// L
+// Limit to first 14 days with slots
 $availability_by_date = array_slice($availability_by_date, 0, 14, true);
 
 // Mock Reviews
