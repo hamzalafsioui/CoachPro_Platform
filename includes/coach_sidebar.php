@@ -65,9 +65,15 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <!-- User Mini Profile -->
     <div class="absolute bottom-0 w-full p-6 border-t border-gray-800 bg-black/20">
         <div class="flex items-center space-x-3">
-            <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($coach_name ?? 'Coach'); ?>&background=0D8ABC&color=fff" alt="Profile" class="w-10 h-10 rounded-full border-2 border-gray-700">
+            <?php
+            $display_name = 'Coach';
+            if (isset($coachObj) && $coachObj instanceof Coach) {
+                $display_name = $coachObj->getFirstname() . ' ' . $coachObj->getLastname();
+            }
+            ?>
+            <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($display_name); ?>&background=0D8ABC&color=fff" alt="Profile" class="w-10 h-10 rounded-full border-2 border-gray-700">
             <div>
-                <p class="text-sm font-semibold text-white"><?php echo htmlspecialchars($coach_name ?? 'Coach Name'); ?></p>
+                <p class="text-sm font-semibold text-white"><?php echo htmlspecialchars($display_name); ?></p>
                 <p class="text-xs text-gray-500">Professional Coach</p>
             </div>
         </div>
