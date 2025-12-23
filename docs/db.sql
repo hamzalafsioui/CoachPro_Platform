@@ -1,10 +1,13 @@
-CREATE DATABASE IF NOT EXISTS coach_pro;
-USE coach_pro;
+CREATE DATABASE IF NOT EXISTS coachPro;
+USE coachPro;
+
+-- Roles Table
 CREATE TABLE roles (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE
 );
 
+-- Users Table
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     role_id INT NOT NULL,
@@ -21,7 +24,7 @@ CREATE TABLE users (
         ON DELETE RESTRICT
 );
 
-
+-- Coach Profiles Table
 CREATE TABLE coach_profiles (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL UNIQUE,
@@ -36,13 +39,22 @@ CREATE TABLE coach_profiles (
         ON DELETE CASCADE
 );
 
+-- Sportif Table
+CREATE TABLE sportifs (
+    user_id INT PRIMARY KEY,
 
+    CONSTRAINT fk_sportif_user
+        FOREIGN KEY (user_id) REFERENCES users(id)
+        ON DELETE CASCADE
+);
+
+-- Sports Table
 CREATE TABLE sports (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE
 );
 
-
+-- Coach-Sports Mapping
 CREATE TABLE coach_sports (
     coach_id INT NOT NULL,
     sport_id INT NOT NULL,
@@ -58,7 +70,7 @@ CREATE TABLE coach_sports (
         ON DELETE CASCADE
 );
 
-
+-- Availabilities (Specific Slots)
 CREATE TABLE availabilities (
     id INT AUTO_INCREMENT PRIMARY KEY,
     coach_id INT NOT NULL,
@@ -72,13 +84,28 @@ CREATE TABLE availabilities (
         ON DELETE CASCADE
 );
 
+-- Recurring Slots (Weekly Planning)
+CREATE TABLE coach_recurring_slots (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    coach_id INT NOT NULL,
+    day_of_week ENUM('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday') NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
 
+    CONSTRAINT fk_recurring_coach
+        FOREIGN KEY (coach_id) REFERENCES coach_profiles(id)
+        ON DELETE CASCADE,
+
+    UNIQUE KEY idx_coach_day_time (coach_id, day_of_week, start_time)
+);
+
+-- Statuses Table
 CREATE TABLE statuses (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE
 );
 
-
+-- Reservations Table
 CREATE TABLE reservations (
     id INT AUTO_INCREMENT PRIMARY KEY,
     sportif_id INT NOT NULL,
@@ -89,7 +116,7 @@ CREATE TABLE reservations (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_reservation_sportif
-        FOREIGN KEY (sportif_id) REFERENCES users(id)
+        FOREIGN KEY (sportif_id) REFERENCES sportif(user_id)
         ON DELETE CASCADE,
 
     CONSTRAINT fk_reservation_coach
@@ -105,7 +132,7 @@ CREATE TABLE reservations (
         ON DELETE RESTRICT
 );
 
-
+-- Reviews Table
 CREATE TABLE reviews (
     id INT AUTO_INCREMENT PRIMARY KEY,
     reservation_id INT NOT NULL UNIQUE,
@@ -119,61 +146,72 @@ CREATE TABLE reviews (
         ON DELETE CASCADE,
 
     CONSTRAINT fk_review_author
-        FOREIGN KEY (author_id) REFERENCES users(id)
+        FOREIGN KEY (author_id) REFERENCES sportif(user_id)
         ON DELETE CASCADE
 );
 
--- STATUSES
-INSERT INTO statuses (name) VALUES
-('pending'),
-('confirmed'),
-('completed'),
-('cancelled');
-
-
+-- Indexes for performance
 CREATE INDEX idx_users_role ON users(role_id);
 CREATE INDEX idx_reservations_coach ON reservations(coach_id);
 CREATE INDEX idx_reservations_sportif ON reservations(sportif_id);
 CREATE INDEX idx_availabilities_coach ON availabilities(coach_id);
-
+CREATE INDEX idx_availabilities_date ON availabilities(date);
+CREATE INDEX idx_reservations_created ON reservations(created_at);
+CREATE INDEX idx_coach_sports_sport ON coach_sports(sport_id);
 
 -- INSERT DATA
 
--- ROLES
-INSERT INTO roles (name) VALUES
-('coach'),
-('sportif');
-
--- USERS
+-- Roles
+INSERT INTO roles (name) VALUES ('coach'), ('sportif');
+s
+-- Users
 INSERT INTO users (role_id, firstname, lastname, email, password, phone) VALUES
-(1, 'Hamza', 'Lafsioui', 'hamza.coach@email.com', '11111111', '0612345678'),
-(2, 'Sara', 'Sportif', 'sara.sportif@email.com', '11111111', '0698765432');
+(1, 'Hamza', 'Lafsioui', 'hamza.coach@email.com', '$2y$12$rJsON6G/CBvfvR26cSQeGu1lOJRjWQZEHxGiyZIcVQvzb4uajXEjG', '0612345678'),
+(1, 'John', 'Doe', 'john.doe@email.com', '$2y$12$rJsON6G/CBvfvR26cSQeGu1lOJRjWQZEHxGiyZIcVQvzb4uajXEjG', '0600000001'),
+(1, 'Alice', 'Smith', 'alice.smith@email.com', '$2y$12$rJsON6G/CBvfvR26cSQeGu1lOJRjWQZEHxGiyZIcVQvzb4uajXEjG', '0600000002'),
+(2, 'Sara', 'Sportif', 'sara.sportif@email.com', '$2y$12$rJsON6G/CBvfvR26cSQeGu1lOJRjWQZEHxGiyZIcVQvzb4uajXEjG', '0698765432'),
+(2, 'Bob', 'Johnson', 'bob.johnson@email.com', '$2y$12$rJsON6G/CBvfvR26cSQeGu1lOJRjWQZEHxGiyZIcVQvzb4uajXEjG', '0698765433');
 
--- COACH PROFILE
+-- Coach Profiles
 INSERT INTO coach_profiles (user_id, bio, experience_years, certifications, photo, rating_avg) VALUES
-(1, 'Professional fitness coach', 5, 'Certified Personal Trainer', 'hamza.jpg', 4.50);
+(1, 'Professional fitness coach specializing in HIIT and strength training.', 5, 'Certified Personal Trainer, Crossfit L1', 'hamza.jpg', 4.80),
+(2, 'Expert tennis coach for all levels.', 8, 'ATP Coach Certification', 'john.jpg', 4.50),
+(3, 'Yoga instructor focusing on mindfulness and flexibility.', 3, '200h RYT Certification', 'alice.jpg', 4.90);
 
--- SPORTS
-INSERT INTO sports (name) VALUES
-('Football'),
-('Fitness'),
-('Yoga');
+-- Sportifs
+INSERT INTO sportif (user_id) VALUES
+(4), (5);
 
--- COACH SPORTS
+-- Sports
+INSERT INTO sports (name) VALUES ('Football'), ('Fitness'), ('Yoga'), ('Tennis'), ('Basketball'), ('Padel');
+
+-- Coach Sports
 INSERT INTO coach_sports (coach_id, sport_id) VALUES
-(1, 2),
-(1, 3);
+(1, 2), 
+(2, 4), 
+(3, 3); 
 
--- AVAILABILITIES
+-- Availabilities
 INSERT INTO availabilities (coach_id, date, start_time, end_time) VALUES
-(1, '2025-01-20', '09:00:00', '11:00:00'),
-(1, '2025-01-21', '14:00:00', '16:00:00');
+(1, '2025-01-20', '09:00:00', '10:00:00'),
+(1, '2025-01-20', '10:00:00', '11:00:00'),
+(2, '2025-01-21', '14:00:00', '15:00:00'),
+(3, '2025-01-22', '08:00:00', '09:00:00');
 
+-- Recurring Slots
+INSERT INTO coach_recurring_slots (coach_id, day_of_week, start_time, end_time) VALUES
+(1, 'monday', '18:00:00', '19:00:00'),
+(1, 'wednesday', '18:00:00', '19:00:00'),
+(2, 'tuesday', '10:00:00', '12:00:00');
 
--- RESERVATION
+-- Statuses
+INSERT INTO statuses (name) VALUES ('pending'), ('confirmed'), ('completed'), ('cancelled');
+
+-- Reservations
 INSERT INTO reservations (sportif_id, coach_id, availability_id, status_id, price) VALUES
-(2, 1, 1, 2, 200.00);
+(4, 1, 1, 2, 200.00), 
+(5, 2, 3, 1, 300.00); 
 
--- REVIEW
+-- Reviews
 INSERT INTO reviews (reservation_id, author_id, rating, comment) VALUES
-(1, 2, 5, 'Great coaching session!');
+(1, 4, 5, 'Great coaching session! Highly recommend.');
