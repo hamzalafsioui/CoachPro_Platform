@@ -1,8 +1,5 @@
 <?php
-session_start();
-
-require_once '../../functions/reservation.functions.php';
-require_once '../../functions/coach.functions.php';
+require_once '../../config/App.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -11,12 +8,14 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // Get Coach ID
-$coachId = getCoachIdByUserId($_SESSION['user_id']);
+$coachObj = new Coach($_SESSION['user_id']);
+$coachId = $coachObj->getCoachIdByUserId();
 
 if (!$coachId) {
     $reservations = [];
 } else {
-    $reservations = getCoachReservations($coachId);
+    $reservationObj = new Reservation();
+    $reservations = $reservationObj->getByCoach($coachId);
 }
 ?>
 

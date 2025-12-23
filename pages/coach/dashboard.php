@@ -1,30 +1,25 @@
 <?php
-
-session_start();
-
-require_once '../../functions/coach.functions.php';
-require_once '../../functions/stats.functions.php';
-require_once '../../functions/reservation.functions.php';
+require_once '../../config/App.php';
 
 // Authentication
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'coach') {
+if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'coach') {
     header("Location: ../auth/login.php");
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
-$coach_profile = getCoachProfile($user_id);
+$userId = $_SESSION['user']['id'];
+$coachObj = new Coach((int)$userId);
+$statsObj = new Stats();
+$resObj = new Reservation();
 
-if (!$coach_profile) {
-    
-    $coach_name = "Coach";
+$coach_id = $coachObj->getCoachId();
+
+if ($coach_id) {
+    $stats = $statsObj->getCoachStats($coach_id);
+    $upcoming_sessions = $resObj->getCoachUpcomingSessions($coach_id);
+} else {
     $stats = ['total_sessions' => 0, 'total_clients' => 0, 'rating' => 0];
     $upcoming_sessions = [];
-} else {
-    $coach_name = $coach_profile['firstname'] . ' ' . $coach_profile['lastname'];
-    $coach_id = $coach_profile['id'];
-    $stats = getCoachStats($coach_id);
-    $upcoming_sessions = getCoachUpcomingSessions($coach_id);
 }
 ?>
 
@@ -71,7 +66,7 @@ if (!$coach_profile) {
             <!-- Welcome Section -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 class="text-3xl font-outfit font-bold text-white mb-2">Welcome back, <?php echo explode(' ', $coach_name)[0]; ?>! 👋</h1>
+                    <h1 class="text-3xl font-outfit font-bold text-white mb-2">Welcome back, <?php echo htmlspecialchars($coachObj->getFirstname()); ?>! 👋</h1>
                     <p class="text-gray-400">Here's what's happening with your schedule today.</p>
                 </div>
                 <a href="schedule.php?action=new" class="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white px-6 py-3 rounded-lg font-medium shadow-lg shadow-blue-500/25 transition-all transform hover:scale-105 flex items-center gap-2">

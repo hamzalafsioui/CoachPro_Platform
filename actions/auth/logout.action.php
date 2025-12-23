@@ -1,10 +1,7 @@
 <?php
+require_once '../../config/App.php';
 
-session_start();
-
-// Destroy all session data
-session_unset();
-session_destroy();
+Auth::logout();
 
 // Redirect to login page
 header("Location: ../../pages/auth/login.php");

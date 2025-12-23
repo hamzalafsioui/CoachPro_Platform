@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once '../../config/App.php';
 $page_title = "My Schedule";
 ?>
 

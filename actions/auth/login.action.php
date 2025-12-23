@@ -1,6 +1,7 @@
 <?php
-session_start();
-require_once '../../functions/auth.functions.php';
+require_once '../../config/App.php';
+
+$auth = new Auth();
 
 // Check if form was submitted
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -32,14 +33,16 @@ if (!empty($errors)) {
     exit();
 }
 
-$result = loginUser($email, $password);
+$result = $auth->login($email, $password);
 
 if ($result['success']) {
     $_SESSION['success'] = $result['message'];
 
     if ($_SESSION['role'] === "coach") {
+        session_write_close();
         header('Location: ../../pages/coach/dashboard.php');
     } elseif ($_SESSION['role'] === "sportif") {
+        session_write_close();
         header('Location: ../../pages/sportif/dashboard.php');
     }
 } else {
@@ -47,4 +50,3 @@ if ($result['success']) {
     header('Location: ../../pages/auth/login.php');
 }
 exit();
-

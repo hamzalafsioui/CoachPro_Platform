@@ -1,3 +1,4 @@
+<?php require_once '../../config/App.php'; ?>
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 
@@ -21,7 +22,7 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../../assets/css/style.css">
 
-    
+
 </head>
 
 <body class="gradient-bg min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -44,7 +45,6 @@
         <div class="glass-dark rounded-2xl p-8 shadow-2xl">
             <?php
             // Display error messages if any
-            session_start();
             if (isset($_SESSION['error'])) {
                 echo '<div class="mb-6 p-4 rounded-lg bg-red-500/20 border border-red-500/50 text-red-200">
                         <i class="fas fa-exclamation-circle mr-2"></i>' . htmlspecialchars($_SESSION['error']) . '

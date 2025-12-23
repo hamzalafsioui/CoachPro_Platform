@@ -1,11 +1,9 @@
 <?php
-session_start();
-require_once '../../config/database.php';
-require_once '../../functions/coach.functions.php';
-require_once '../../functions/user.functions.php'; 
+require_once '../../config/App.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['user_id'])) {
-    $userId = $_SESSION['user_id'];
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['user'])) {
+    $userId = $_SESSION['user']['id'];
+    $coachObj = new Coach((int)$userId);
 
     // Get form data
     $name = trim($_POST['name'] ?? '');
@@ -18,14 +16,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['user_id'])) {
     $firstname = $nameParts[0];
     $lastname = $nameParts[1] ?? '';
 
-    
-    $result = updateCoachProfile($userId, $firstname, $lastname, $email, $phone, $bio, $experience);
+    $data = [
+        'firstname' => $firstname,
+        'lastname' => $lastname,
+        'email' => $email,
+        'phone' => $phone,
+        'bio' => $bio,
+        'experience' => $experience
+    ];
+
+    $result = $coachObj->updateProfile(null, $data);
 
     if ($result) {
-       
+        // Update session data
+        $_SESSION['user']['firstname'] = $firstname;
+        $_SESSION['user']['lastname'] = $lastname;
+
+        session_write_close();
         header("Location: ../../pages/coach/profile.php?status=success");
     } else {
-        
+        session_write_close();
         header("Location: ../../pages/coach/profile.php?status=error");
     }
     exit();

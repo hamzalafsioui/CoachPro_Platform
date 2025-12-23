@@ -1,6 +1,5 @@
 <?php
-session_start();
-require_once '../../functions/reservation.functions.php';
+require_once '../../config/App.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user'])) {
@@ -8,11 +7,13 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-$user = $_SESSION['user'];
-$sportif_id = $user['id'];
+$userId = $_SESSION['user']['id'];
+$sportifObj = new Sportif((int)$userId);
+$sportif_id = $sportifObj->getId();
 
 $page_title = "My Bookings";
-$reservations = getSportifReservations($sportif_id);
+$reservationObj = new Reservation();
+$reservations = $reservationObj->getBySportif($sportif_id);
 ?>
 
 <!DOCTYPE html>

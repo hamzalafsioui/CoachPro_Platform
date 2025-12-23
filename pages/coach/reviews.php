@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once '../../config/App.php';
 
 // Mock data
 $page_title = "Client Reviews";

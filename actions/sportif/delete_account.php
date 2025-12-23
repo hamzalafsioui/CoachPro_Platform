@@ -1,7 +1,8 @@
 <?php
-session_start();
-require_once __DIR__ . '/../../functions/auth.functions.php';
-require_once __DIR__ . '/../../functions/sportif.functions.php';
+require_once __DIR__ . '/../../config/App.php';
+
+$userId = $_SESSION['user']['id'];
+$sportifObj = new Sportif((int)$userId);
 
 header('Content-Type: application/json');
 
@@ -17,7 +18,7 @@ if (!isset($_SESSION['user'])) {
 
 $userId = $_SESSION['user']['id'];
 
-if (deleteSportifAccount($userId)) {
+if ($sportifObj->deleteAccount()) {
     // Clear session
     session_destroy();
     echo json_encode(['success' => true, 'message' => 'Account deleted successfully']);

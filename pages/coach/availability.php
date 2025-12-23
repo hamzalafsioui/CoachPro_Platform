@@ -1,7 +1,5 @@
 <?php
-session_start();
-require_once '../../functions/availability.functions.php';
-require_once '../../functions/coach.functions.php';
+require_once '../../config/App.php';
 
 if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'coach') {
     header('Location: ../../index.php');
@@ -10,13 +8,16 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'coach') {
 
 $userId = $_SESSION['user']['id'];
 $coach_name = $_SESSION['user']['firstname'] . ' ' . $_SESSION['user']['lastname'];
-$coachId = getCoachIdByUserId($userId);
+
+$coachObj = new Coach($userId);
+$coachId = $coachObj->getCoachIdByUserId();
 
 if (!$coachId) {
     die("Coach profile not found.");
 }
 
-$availability = getCoachRecurringSchedule($coachId);
+$availabilityObj = new Availability();
+$availability = $availabilityObj->getRecurringSchedule($coachId);
 ?>
 
 <!DOCTYPE html>

@@ -1,6 +1,7 @@
 <?php
-session_start();
-require_once '../../functions/reservation.functions.php';
+require_once '../../config/App.php';
+
+$resObj = new Reservation();
 
 header('Content-Type: application/json');
 
@@ -22,7 +23,7 @@ if (!$reservationId) {
     exit;
 }
 
-if (deleteReservation($reservationId)) {
+if ($resObj->delete((int)$reservationId)) {
     echo json_encode(['success' => true, 'message' => 'Reservation deleted successfully']);
 } else {
     echo json_encode(['success' => false, 'message' => 'Failed to delete reservation']);

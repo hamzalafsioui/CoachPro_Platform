@@ -1,7 +1,6 @@
 <?php
-session_start();
-require_once '../../functions/sportif.functions.php';
 
+require_once '../../config/App.php';
 // Check if user is logged in
 if (!isset($_SESSION['user'])) {
     header('Location: ../../index.php');
@@ -10,12 +9,14 @@ if (!isset($_SESSION['user'])) {
 
 $user = $_SESSION['user'];
 $sportif_id = $user['id'];
+$sportifObj = new Sportif((int)$sportif_id);
+
 
 // Get real data from functions
-$stats = getSportifStats($sportif_id);
-$upcoming_session = getSportifUpcomingSession($sportif_id);
-$recent_activities = getSportifRecentActivity($sportif_id);
-$weekly_activity = getSportifWeeklyActivity();
+$stats = $sportifObj->getStats();
+$upcoming_session = $sportifObj->getNextSession();
+$recent_activities = $sportifObj->getRecentActivity();
+$weekly_activity = $sportifObj->getWeeklyActivity();
 ?>
 
 <!DOCTYPE html>
@@ -103,7 +104,7 @@ $weekly_activity = getSportifWeeklyActivity();
             <!-- Welcome Section -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 id="userGreeting" class="text-3xl font-outfit font-bold text-white mb-2">Welcome back, <?php echo htmlspecialchars($user['firstname']); ?>!</h1>
+                    <h1 id="userGreeting" class="text-3xl font-outfit font-bold text-white mb-2">Welcome back, <?php echo htmlspecialchars($sportifObj->getFirstname()); ?>!</h1>
                     <p class="text-gray-400">Here's your daily fitness summary.</p>
                 </div>
                 <div class="flex gap-3">

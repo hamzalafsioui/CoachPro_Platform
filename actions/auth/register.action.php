@@ -1,6 +1,7 @@
 <?php
-session_start();
-require_once '../../functions/auth.functions.php';
+require_once '../../config/App.php';
+
+$auth = new Auth();
 
 // Check if form was submitted
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -50,7 +51,7 @@ if (!in_array($role, ['sportif', 'coach'])) {
     $errors[] = "Invalid role selected.";
 }
 
-// If there are validation errors => Redirect back with errors
+// If there are validation errors=> Redirect back with errors
 if (!empty($errors)) {
     $_SESSION['error'] = implode(' & ', $errors);
     header('Location: ../../pages/auth/register.php');
@@ -58,13 +59,15 @@ if (!empty($errors)) {
 }
 
 // Use the registerUser function from auth.functions.php
-$result = registerUser($firstname, $lastname, $email, $phone, $password, $role);
+$result = $auth->register($firstname, $lastname, $email, $phone, $password, $role);
 
 if ($result['success']) {
     $_SESSION['success'] = $result['message'];
+    session_write_close();
     header('Location: ../../pages/auth/login.php');
 } else {
     $_SESSION['error'] = $result['message'];
+    session_write_close();
     header('Location: ../../pages/auth/register.php');
 }
 exit();

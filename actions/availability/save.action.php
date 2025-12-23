@@ -1,7 +1,8 @@
 <?php
-session_start();
-require_once '../../functions/availability.functions.php';
-require_once '../../functions/coach.functions.php';
+require_once '../../config/App.php';
+
+$coachObj = new Coach();
+$availabilityObj = new Availability();
 
 header('Content-Type: application/json');
 
@@ -17,7 +18,7 @@ if (!isset($_SESSION['user'])) {
 }
 
 $userId = $_SESSION['user']['id'];
-$coachId = getCoachIdByUserId($userId);
+$coachId = $coachObj->getCoachIdByUserId($userId);
 
 
 if (!$coachId) {
@@ -34,7 +35,7 @@ if (!$schedule) {
     exit;
 }
 
-if (saveCoachAvailability($coachId, $schedule)) {
+if ($availabilityObj->saveCoachAvailability($coachId, $schedule)) {
     echo json_encode(['success' => true, 'message' => 'Availability saved successfully']);
 } else {
     echo json_encode(['success' => false, 'message' => 'Failed to save availability']);

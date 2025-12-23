@@ -1,6 +1,7 @@
 <?php
-session_start();
-require_once '../../functions/reservation.functions.php';
+require_once '../../config/App.php';
+
+$resObj = new Reservation();
 
 header('Content-Type: application/json');
 
@@ -35,7 +36,7 @@ if (!$sportifId || !$coachId || !$availabilityId) {
     exit;
 }
 
-$newId = createReservation((int)$sportifId, (int)$coachId, (int)$availabilityId, (float)$price);
+$newId = $resObj->create((int)$sportifId, (int)$coachId, (int)$availabilityId, (float)$price);
 
 if ($newId) {
     echo json_encode([
@@ -44,7 +45,7 @@ if ($newId) {
         'message' => 'Reservation created successfully'
     ]);
 } else {
-    
+
     echo json_encode([
         'success' => false,
         'message' => 'Failed to create reservation. The slot might be already taken or a database error occurred.'

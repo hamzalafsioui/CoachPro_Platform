@@ -1,8 +1,8 @@
 <?php
-session_start();
-require_once __DIR__ . '/../../functions/auth.functions.php';
-require_once __DIR__ . '/../../functions/sportif.functions.php';
-require_once __DIR__ . '/../../functions/user.functions.php';
+require_once '../../config/App.php';
+
+$sportifObj = new Sportif();
+$userObj = new User();
 
 // Check if user is logged in
 if (!isset($_SESSION['user'])) {
@@ -11,13 +11,12 @@ if (!isset($_SESSION['user'])) {
 }
 
 $userId = $_SESSION['user']['id'];
-
-$user = getUserById($userId);
+$sportifObj = new Sportif((int)$userId);
 // Stats
-$sportifStats = getSportifStats($userId);
+$sportifStats = $sportifObj->getStats();
 $stats = [
     'completed_sessions' => $sportifStats['workouts'],
-    'upcoming_sessions' => getSportifUpcomingSession($userId) ? 1 : 0, 
+    'upcoming_sessions' => $sportifObj->getNextSession() ? 1 : 0,
 ];
 ?>
 
@@ -108,14 +107,14 @@ $stats = [
                 <div class="relative flex flex-col md:flex-row items-center md:items-end gap-6 pt-10">
                     <div class="profile-avatar-container">
                         <div class="w-32 h-32 rounded-full border-4 border-slate-900 bg-slate-800 flex items-center justify-center text-4xl font-bold text-white shadow-xl">
-                            <?php echo substr($user['firstname'], 0, 1) . substr($user['lastname'], 0, 1); ?>
+                            <?php echo strtoupper(substr($sportifObj->getFirstname(), 0, 1) . substr($sportifObj->getLastname(), 0, 1)); ?>
                         </div>
                         <button class="profile-avatar-upload shadow-lg" title="Change Photo">
                             <i class="fas fa-camera text-white text-xs"></i>
                         </button>
                     </div>
                     <div class="text-center md:text-left mb-2 flex-1">
-                        <h1 class="text-3xl font-outfit font-bold text-white"><?php echo htmlspecialchars($user['firstname'] . ' ' . $user['lastname']); ?></h1>
+                        <h1 class="text-3xl font-outfit font-bold text-white"><?php echo htmlspecialchars($sportifObj->getFirstname() . ' ' . $sportifObj->getLastname()); ?></h1>
                         <p class="text-blue-400 font-medium">Sportif User</p>
                     </div>
                     <div class="flex gap-4">
@@ -157,19 +156,19 @@ $stats = [
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-400 mb-2">First Name</label>
-                                    <input type="text" name="firstname" value="<?php echo htmlspecialchars($user['firstname']); ?>" class="form-input w-full px-4 py-3 rounded-xl text-white" disabled required>
+                                    <input type="text" name="firstname" value="<?php echo htmlspecialchars($sportifObj->getFirstname()); ?>" class="form-input w-full px-4 py-3 rounded-xl text-white" disabled required>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-400 mb-2">Last Name</label>
-                                    <input type="text" name="lastname" value="<?php echo htmlspecialchars($user['lastname']); ?>" class="form-input w-full px-4 py-3 rounded-xl text-white" disabled required>
+                                    <input type="text" name="lastname" value="<?php echo htmlspecialchars($sportifObj->getLastname()); ?>" class="form-input w-full px-4 py-3 rounded-xl text-white" disabled required>
                                 </div>
                                 <div class="md:col-span-2">
                                     <label class="block text-sm font-medium text-gray-400 mb-2">Email Address</label>
-                                    <input type="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" class="form-input w-full px-4 py-3 rounded-xl text-white opacity-75" disabled title="Contact support to change email">
+                                    <input type="email" name="email" value="<?php echo htmlspecialchars($sportifObj->getEmail()); ?>" class="form-input w-full px-4 py-3 rounded-xl text-white opacity-75" disabled title="Contact support to change email">
                                 </div>
                                 <div class="md:col-span-2">
                                     <label class="block text-sm font-medium text-gray-400 mb-2">Phone Number</label>
-                                    <input type="tel" name="phone" value="<?php echo htmlspecialchars($user['phone'] ?? ''); ?>" placeholder="+1 (555) 000-0000" class="form-input w-full px-4 py-3 rounded-xl text-white" disabled>
+                                    <input type="tel" name="phone" value="<?php echo htmlspecialchars($sportifObj->getPhone() ?? ''); ?>" placeholder="+1 (555) 000-0000" class="form-input w-full px-4 py-3 rounded-xl text-white" disabled>
                                 </div>
                             </div>
                         </form>

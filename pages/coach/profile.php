@@ -1,28 +1,23 @@
 <?php
-session_start();
-require_once '../../functions/coach.functions.php';
+require_once '../../config/App.php';
 
-// check is user login
-if (!isset($_SESSION['user_id'])) {
+// Check if user is logged in and is a coach
+if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'coach') {
     header("Location: ../../index.php");
     exit();
 }
 
-$coach_profile = getCoachProfile($_SESSION["user_id"]);
+$userId = $_SESSION['user']['id'];
+$coachObj = new Coach((int)$userId);
 
-// check is data Exists
-if (!$coach_profile) {
-    // Handle error or redirect
-    die("Coach not found.");
-}
-
+// The Coach constructor calls load(), so properties are already populated.
 $coach = [
-    'name' => ($coach_profile['firstname'] ?? '') . ' ' . ($coach_profile['lastname'] ?? ''),
-    'email' => $coach_profile['email'] ?? '',
-    'bio' => $coach_profile['bio'] ?? 'No bio yet.',
-    'specialties' => 'HIIT, Strength Training, Cardio', // Not Exist in DB => hardcoded 
-    'phone' => $coach_profile['phone'] ?? '+212xxxxxxxx',
-    'experience' => $coach_profile['experience_years'] ?? 0
+    'name' => $coachObj->getFirstname() . ' ' . $coachObj->getLastname(),
+    'email' => $coachObj->getEmail(),
+    'bio' => $coachObj->getBio() ?: 'No bio yet.',
+    'specialties' => 'HIIT, Strength Training, Cardio', // Hardcoded as requested
+    'phone' => $coachObj->getPhone() ?: '+212xxxxxxxx',
+    'experience' => $coachObj->getExperienceYears()
 ];
 ?>
 
@@ -106,31 +101,31 @@ $coach = [
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-gray-400 text-sm font-medium mb-2">Full Name</label>
-                                    <input type="text" name="name" value="<?php echo htmlspecialchars($coach['name']); ?>" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white">
+                                    <input type="text" name="name" value="<?php echo htmlspecialchars($coachObj->getFirstname() . ' ' . $coachObj->getLastname()); ?>" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white">
                                 </div>
                                 <div>
                                     <label class="block text-gray-400 text-sm font-medium mb-2">Email Address</label>
-                                    <input type="email" name="email" value="<?php echo htmlspecialchars($coach['email']); ?>" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white" readonly>
+                                    <input type="email" name="email" value="<?php echo htmlspecialchars($coachObj->getEmail()); ?>" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white" readonly>
                                 </div>
                                 <div>
                                     <label class="block text-gray-400 text-sm font-medium mb-2">Phone Number</label>
-                                    <input type="tel" name="phone" value="<?php echo htmlspecialchars($coach['phone']); ?>" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white">
+                                    <input type="tel" name="phone" value="<?php echo htmlspecialchars($coachObj->getPhone() ?? ''); ?>" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white">
                                 </div>
                                 <div>
                                     <label class="block text-gray-400 text-sm font-medium mb-2">Experience (Years)</label>
-                                    <input type="number" name="experience" value="<?php echo htmlspecialchars($coach['experience']); ?>" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white">
+                                    <input type="number" name="experience" value="<?php echo htmlspecialchars((string)$coachObj->getExperienceYears()); ?>" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white">
                                 </div>
                             </div>
 
                             <div>
                                 <label class="block text-gray-400 text-sm font-medium mb-2">Specialties</label>
-                                <input type="text" name="specialties" value="<?php echo htmlspecialchars($coach['specialties']); ?>" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white" readonly>
+                                <input type="text" name="specialties" value="HIIT, Strength Training, Cardio" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white" readonly>
                                 <p class="text-xs text-gray-500 mt-2">Specialties are currently managed by the administration.</p>
                             </div>
 
                             <div>
                                 <label class="block text-gray-400 text-sm font-medium mb-2">Bio</label>
-                                <textarea name="bio" rows="4" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white"><?php echo htmlspecialchars($coach['bio']); ?></textarea>
+                                <textarea name="bio" rows="4" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white"><?php echo htmlspecialchars($coachObj->getBio()); ?></textarea>
 
                             </div>
 

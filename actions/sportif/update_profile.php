@@ -1,7 +1,8 @@
 <?php
-session_start();
-require_once __DIR__ . '/../../functions/auth.functions.php';
-require_once __DIR__ . '/../../functions/sportif.functions.php';
+require_once __DIR__ . '/../../config/App.php';
+
+$userId = $_SESSION['user']['id'];
+$sportifObj = new Sportif((int)$userId);
 
 header('Content-Type: application/json');
 
@@ -25,7 +26,12 @@ if (empty($firstname) || empty($lastname)) {
     exit;
 }
 
-if (updateSportifProfile($userId, $firstname, $lastname, $phone)) {
+$data = [
+    'firstname' => $firstname,
+    'lastname' => $lastname,
+    'phone' => $phone
+];
+if ($sportifObj->update($data)) {
     // Update session
     $_SESSION['user']['firstname'] = $firstname;
     $_SESSION['user']['lastname'] = $lastname;

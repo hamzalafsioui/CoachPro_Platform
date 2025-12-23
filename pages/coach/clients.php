@@ -1,8 +1,5 @@
 <?php
-session_start();
-
-require_once '../../functions/coach.functions.php';
-require_once '../../functions/client.functions.php';
+require_once '../../config/App.php';
 
 // Authentication Check
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'coach') {
@@ -11,14 +8,13 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'coach') {
 }
 
 $user_id = $_SESSION['user_id'];
-$coach_profile = getCoachProfile($user_id);
+$coachObj = new Coach($user_id);
 
-if (!$coach_profile) {
+if (!$coachObj->getCoachId()) {
     // coach profile doesn't exist yet
     $clients = [];
 } else {
-    $coach_id = $coach_profile['id'];
-    $clients = getCoachClients($coach_id);
+    $clients = $coachObj->getClients();
 }
 
 $page_title = "My Clients";

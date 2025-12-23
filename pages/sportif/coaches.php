@@ -1,6 +1,5 @@
 <?php
-session_start();
-require_once '../../functions/coach.functions.php';
+require_once '../../config/App.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user'])) {
@@ -8,11 +7,13 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-$user = $_SESSION['user'];
+$userId = $_SESSION['user']['id'];
+$sportifObj = new Sportif((int)$userId);
 
 // Get dynamic data from DB
-$coaches = getAllCoachesWithDetails();
-$sports = getAllSports();
+$coachObj = new Coach();
+$coaches = $coachObj->getAllDetailed();
+$sports = []; //  Implement getSports() method
 ?>
 
 <!DOCTYPE html>

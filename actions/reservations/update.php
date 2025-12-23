@@ -1,6 +1,7 @@
 <?php
-session_start();
-require_once '../../functions/reservation.functions.php';
+require_once '../../config/App.php';
+
+$resObj = new Reservation();
 
 header('Content-Type: application/json');
 
@@ -40,7 +41,7 @@ switch ($action) {
         exit;
 }
 
-if (updateReservationStatus($reservationId, $status)) {
+if ($resObj->updateStatus((int)$reservationId, $status)) {
     echo json_encode(['success' => true, 'message' => 'Reservation updated successfully']);
 } else {
     echo json_encode(['success' => false, 'message' => 'Failed to update reservation']);

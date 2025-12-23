@@ -1,7 +1,5 @@
 <?php
-session_start();
-require_once '../../functions/coach.functions.php';
-require_once '../../functions/availability.functions.php';
+require_once '../../config/App.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user'])) {
@@ -13,30 +11,32 @@ $user = $_SESSION['user'];
 $sportif_id = $user['id'];
 
 $coach_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$coach = getCoachProfileWithSports($coach_id);
+$coachObj = new Coach();
+$coach = $coachObj->getProfileWithSports($coach_id);
 
 if (!$coach) {
     header('Location: coaches.php');
     exit();
 }
 
-$raw_availabilities = getCoachAvailabilities($coach_id);
+$availabilityObj = new Availability();
+$raw_availabilities = $availabilityObj->getByCoach($coach_id);
 $availability_by_date = [];
 
 foreach ($raw_availabilities as $row) {
     if (!$row['is_available']) continue;
 
     // Only show slots from today onwards
-    if (strtotime($row['date']) < strtotime(date('Y-m-d'))) continue;
+    if (strtotime((string)$row['date']) < strtotime(date('Y-m-d'))) continue;
 
-    $date_key = $row['date'];
+    $date_key = (string)$row['date'];
     if (!isset($availability_by_date[$date_key])) {
         $availability_by_date[$date_key] = [];
     }
 
     $availability_by_date[$date_key][] = [
-        'id' => $row['id'],
-        'time' => date('H:i', strtotime($row['start_time'])),
+        'id' => (int)$row['id'],
+        'time' => date('H:i', strtotime((string)$row['start_time'])),
         'date' => $row['date']
     ];
 }
@@ -70,7 +70,7 @@ $reviews = [
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../../assets/css/sportif_coach_details.css">
-    <link rel="stylesheet" href="../../assets/css/sportif_profile.css"> 
+    <link rel="stylesheet" href="../../assets/css/sportif_profile.css">
 
     <!-- Global Tailwind Config -->
     <script src="https://cdn.tailwindcss.com"></script>
