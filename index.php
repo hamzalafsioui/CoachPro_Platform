@@ -95,7 +95,7 @@
                         Connect with certified professional coaches, book personalized training sessions, and achieve your fitness goals faster with CoachPro's innovative platform.
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="pages/register.php" class="gradient-blue px-8 py-4 rounded-lg text-white font-semibold text-lg hover-scale smooth-transition shadow-2xl flex items-center justify-center space-x-2">
+                        <a href="pages/auth/register.php" class="gradient-blue px-8 py-4 rounded-lg text-white font-semibold text-lg hover-scale smooth-transition shadow-2xl flex items-center justify-center space-x-2">
                             <span>Start Your Journey</span>
                             <i class="fas fa-arrow-right"></i>
                         </a>
@@ -301,7 +301,7 @@
                     Join thousands of athletes and fitness enthusiasts who have already taken the first step towards their goals.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="pages/register.php" class="gradient-blue px-10 py-4 rounded-lg text-white font-bold text-lg hover-scale smooth-transition shadow-2xl">
+                    <a href="pages/auth/register.php" class="gradient-blue px-10 py-4 rounded-lg text-white font-bold text-lg hover-scale smooth-transition shadow-2xl">
                         Start Free Trial
                     </a>
                     <a href="#coaches" class="glass border border-white/20 px-10 py-4 rounded-lg text-white font-bold text-lg hover-scale smooth-transition">
