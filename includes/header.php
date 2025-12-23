@@ -1,18 +1,31 @@
 <?php
-// user details for display
+// user details to display
 $header_name = 'User';
 $header_initials = 'U';
 
-if (isset($_SESSION['user'])) {
-    $header_name = $_SESSION['user']['firstname'];
-    $header_initials = substr($_SESSION['user']['firstname'], 0, 1) . substr($_SESSION['user']['lastname'], 0, 1);
-} elseif (isset($coach_name)) {
-    $header_name = $coach_name;
-    $parts = explode(' ', $coach_name);
-    $header_initials = substr($parts[0], 0, 1) . (isset($parts[1]) ? substr($parts[1], 0, 1) : '');
-} elseif (isset($user) && is_array($user) && isset($user['firstname'])) {
-    $header_name = $user['firstname'];
-    $header_initials = substr($user['firstname'], 0, 1) . substr($user['lastname'], 0, 1);
+if (isset($sportifObj) && $sportifObj instanceof Sportif) {
+    $header_name = $sportifObj->getFirstname();
+    $header_initials = strtoupper(substr($sportifObj->getFirstname(), 0, 1) . substr($sportifObj->getLastname(), 0, 1));
+} elseif (isset($coachObj) && $coachObj instanceof Coach) {
+    $header_name = $coachObj->getFirstname();
+    $header_initials = strtoupper(substr($coachObj->getFirstname(), 0, 1) . substr($coachObj->getLastname(), 0, 1));
+} elseif (isset($_SESSION['user'])) {
+    // by session
+    $userId = $_SESSION['user']['id'];
+    $role = $_SESSION['role'] ?? '';
+
+    if ($role === 'coach') {
+        $u = new Coach((int)$userId);
+    } elseif ($role === 'sportif') {
+        $u = new Sportif((int)$userId);
+    } else {
+        $u = new User((int)$userId);
+    }
+
+    if ($u && $u->getId()) {
+        $header_name = $u->getFirstname();
+        $header_initials = strtoupper(substr($u->getFirstname(), 0, 1) . substr($u->getLastname(), 0, 1));
+    }
 }
 ?>
 
