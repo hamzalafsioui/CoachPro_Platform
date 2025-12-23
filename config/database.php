@@ -1,18 +1,15 @@
 <?php
-
-// Database credentials
-$host = 'localhost';
-$user = 'root';
-$pass = 'Sa@123456';
-$dbname = 'coach_pro';
-
-// Create MySQLi connection
-$conn = new mysqli($host, $user, $pass, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Database connection failed: " . $conn->connect_error);
+// start session if not started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
-// Set charset to utf8
-$conn->set_charset("utf8");
+// Include autoloader for automatic class loading
+require_once __DIR__ . '/autoload.php';
+
+// Database credentials
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');
+define('DB_PASS', 'Sa@123456');
+define('DB_NAME', 'coachPro');
+
