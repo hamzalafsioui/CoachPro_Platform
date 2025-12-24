@@ -162,38 +162,61 @@ GROUP BY cp.id
             $data = (array)$userId;
             $id = $this->getId();
         } else {
-            $id = $userId;
+            $id = $userId ?? $this->getId();
         }
 
         if (!$id) return false;
 
-        // First update user 
-        $userData = [
-            'firstname' => $data['firstname'] ?? '',
-            'lastname' => $data['lastname'] ?? '',
-            'email' => $data['email'] ?? '',
-            'phone' => $data['phone'] ?? null
-        ];
-        $this->update($userData);
+        try {
+            $this->db->beginTransaction();
 
-        // Then update or insert coach_profiles
-        $stmt = $this->db->prepare("SELECT id FROM coach_profiles WHERE user_id = ?");
-        $stmt->execute([$id]);
-        $exists = $stmt->fetch();
+            // First update user 
+            $userData = [
+                'firstname' => $data['firstname'] ?? '',
+                'lastname' => $data['lastname'] ?? '',
+                'email' => $data['email'] ?? '',
+                'phone' => $data['phone'] ?? null
+            ];
 
-        if ($exists) {
-            $stmt = $this->db->prepare("UPDATE coach_profiles SET bio = ?, experience_years = ? WHERE user_id = ?");
-            $success = $stmt->execute([$data['bio'] ?? '', $data['experience'] ?? 0, $id]);
-        } else {
-            $stmt = $this->db->prepare("INSERT INTO coach_profiles (user_id, bio, experience_years) VALUES (?, ?, ?)");
-            $success = $stmt->execute([$id, $data['bio'] ?? '', $data['experience'] ?? 0]);
+            if ($id === $this->getId()) {
+                if (!$this->update($userData)) {
+                    throw new Exception('User update failed');
+                }
+            } else {
+                $userObj = new User($id);
+                $userObj->update($userData);
+            }
+
+            // Then update or insert coach_profiles
+            $stmt = $this->db->prepare("SELECT id FROM coach_profiles WHERE user_id = ?");
+            $stmt->execute([$id]);
+            $exists = $stmt->fetch();
+
+            if ($exists) {
+                $stmt = $this->db->prepare("UPDATE coach_profiles SET bio = ?, experience_years = ? WHERE user_id = ?");
+                $success = $stmt->execute([$data['bio'] ?? '', $data['experience'] ?? 0, $id]);
+            } else {
+                $stmt = $this->db->prepare("INSERT INTO coach_profiles (user_id, bio, experience_years) VALUES (?, ?, ?)");
+                $success = $stmt->execute([$id, $data['bio'] ?? '', $data['experience'] ?? 0]);
+            }
+
+            if (!$success) {
+                throw new Exception("Failed to update coach profile");
+            }
+
+            $this->db->commit();
+
+            if ($id === $this->getId()) {
+                $this->load($id);
+            }
+
+            return true;
+        } catch (Exception $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            return false;
         }
-
-        if ($success && $id === $this->getId()) {
-            $this->load($id);
-        }
-
-        return $success;
     }
 
 
