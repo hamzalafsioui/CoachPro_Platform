@@ -10,11 +10,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['user_id']) && !isset($_SESSION['user']['id'])) {
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
     exit;
 }
-
 
 $input = json_decode(file_get_contents('php://input'), true);
 
