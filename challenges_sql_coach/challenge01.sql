@@ -20,16 +20,21 @@ SELECT COUNT(id) AS total_seances_reserve FROM seances
 GROUP BY statut
 HAVING statut = 'reservee';
 
--- 03 taux de réservation (%)
+-- 03 taux de réservation (%) (% de séances réservées par rapport au total des séances)
  -- Todo --------------
-SELECT s.coach_id,
+SELECT 
+    u.nom,
+    u.prenom,
     COUNT(s.id) AS total_seances,
-    COUNT(r.id) AS seances_reservees,
-    (COUNT(r.id) * 100.0 / COUNT(s.id)) AS taux_reservation
+    SUM(CASE WHEN s.statut = 'reservee' THEN 1 ELSE 0 END) AS seances_reservees,
+    (
+        SUM(CASE WHEN s.statut = 'reservee' THEN 1 ELSE 0 END) 
+        / COUNT(s.id) * 100
+    ) AS taux_reservation_pourcent
 FROM seances s
-LEFT JOIN reservations r 
-ON s.id = r.seance_id
+JOIN users u ON u.id = s.coach_id
 GROUP BY s.coach_id;
+
 
 
 --04 seulement les coachs ayant ≥3 séances
