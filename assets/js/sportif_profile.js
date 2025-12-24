@@ -9,10 +9,8 @@ document.addEventListener("DOMContentLoaded", function () {
   let originalValues = {};
 
   editBtn.addEventListener("click", function () {
-    
     formInputs.forEach((input) => {
       if (input.name !== "email") {
-        
         originalValues[input.name] = input.value;
         input.disabled = false;
       }
@@ -143,3 +141,44 @@ function toggleSidebar() {
     overlay.classList.add("hidden");
   }
 }
+
+/* Password Modal Logic */
+document.addEventListener("DOMContentLoaded", function () {
+  const modal = document.getElementById("passwordModal");
+  const openBtn = document.getElementById("changePasswordBtn");
+  const closeBtn = document.getElementById("closePasswordModal");
+  const cancelBtn = document.getElementById("cancelPasswordChange");
+  const modalContent = document.getElementById("passwordModalContent");
+
+  if (!modal || !openBtn || !closeBtn || !cancelBtn || !modalContent) return;
+
+  function openModal() {
+    modal.classList.remove("hidden");
+    setTimeout(() => {
+      modal.classList.remove("opacity-0");
+      modalContent.classList.remove("scale-95");
+      modalContent.classList.add("scale-100");
+    }, 10);
+  }
+
+  function closeModal() {
+    modal.classList.add("opacity-0");
+    modalContent.classList.remove("scale-100");
+    modalContent.classList.add("scale-95");
+
+    setTimeout(() => {
+      modal.classList.add("hidden");
+    }, 300);
+  }
+
+  openBtn.addEventListener("click", openModal);
+  closeBtn.addEventListener("click", closeModal);
+  cancelBtn.addEventListener("click", closeModal);
+
+  // Close on outside click
+  modal.addEventListener("click", function (e) {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+});

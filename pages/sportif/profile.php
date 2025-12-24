@@ -210,7 +210,7 @@ $stats = [
                     <div class="glass-panel p-6 rounded-2xl">
                         <h3 class="text-lg font-bold text-white mb-6">Security</h3>
                         <div class="space-y-4">
-                            <button class="w-full flex items-center justify-between p-4 bg-slate-800/50 hover:bg-slate-800 rounded-xl transition-all group border border-slate-700/50">
+                            <button id="changePasswordBtn" class="w-full flex items-center justify-between p-4 bg-slate-800/50 hover:bg-slate-800 rounded-xl transition-all group border border-slate-700/50">
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
                                         <i class="fas fa-lock text-sm"></i>
@@ -222,6 +222,50 @@ $stats = [
                                 </div>
                                 <i class="fas fa-chevron-right text-gray-600 group-hover:text-blue-400"></i>
                             </button>
+
+                            <!-- Password Change Modal -->
+                            <div id="passwordModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center backdrop-blur-sm opacity-0 transition-opacity duration-300">
+                                <div class="glass-panel p-8 rounded-2xl w-full max-w-md transform scale-95 transition-transform duration-300" id="passwordModalContent" onclick="event.stopPropagation()">
+                                    <div class="flex items-center justify-between mb-6">
+                                        <h3 class="text-xl font-bold text-white">Change Password</h3>
+                                        <button id="closePasswordModal" type="button" class="text-gray-400 hover:text-white transition-colors">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+
+                                    <form action="../../actions/profile/update_password.php" method="POST" class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-400 mb-2">Current Password</label>
+                                            <input type="password" name="current_password" required
+                                                class="w-full px-4 py-3 rounded-xl bg-slate-900/50 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder-gray-600"
+                                                placeholder="Enter current password">
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-400 mb-2">New Password</label>
+                                            <input type="password" name="new_password" required
+                                                class="w-full px-4 py-3 rounded-xl bg-slate-900/50 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder-gray-600"
+                                                placeholder="Enter new password">
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-400 mb-2">Confirm New Password</label>
+                                            <input type="password" name="confirm_password" required
+                                                class="w-full px-4 py-3 rounded-xl bg-slate-900/50 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder-gray-600"
+                                                placeholder="Confirm new password">
+                                        </div>
+
+                                        <div class="pt-4 flex gap-3">
+                                            <button type="button" id="cancelPasswordChange" class="flex-1 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-medium transition-colors">
+                                                Cancel
+                                            </button>
+                                            <button type="submit" class="flex-1 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-medium transition-colors shadow-lg shadow-blue-500/20">
+                                                Update
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
 
                             <button class="w-full flex items-center justify-between p-4 bg-slate-800/50 hover:bg-slate-800 rounded-xl transition-all group border border-slate-700/50">
                                 <div class="flex items-center gap-3">
