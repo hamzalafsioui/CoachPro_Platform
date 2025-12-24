@@ -93,9 +93,10 @@ WHERE u.id = ? AND u.role_id = (SELECT id FROM roles WHERE name = 'coach')
     }
 
 
-    public function getProfileWithSports(): ?array
+    public function getProfileWithSports(?int $coachId = null): ?array
     {
-        if (!$this->coach_id) return null;
+        $id = $coachId ?? $this->coach_id;
+        if (!$id) return null;
 
         $stmt = $this->db->prepare("
 SELECT
@@ -117,7 +118,7 @@ LEFT JOIN sports s ON cs.sport_id = s.id
 WHERE cp.id = ?
 GROUP BY cp.id
 ");
-        $stmt->execute([$this->coach_id]);
+        $stmt->execute([$id]);
         $row = $stmt->fetch();
 
         if ($row) {
