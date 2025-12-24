@@ -31,6 +31,7 @@ switch ($action) {
         $status = 'confirmed';
         break;
     case 'cancel':
+    case 'decline':
         $status = 'cancelled';
         break;
     case 'complete':
@@ -41,7 +42,7 @@ switch ($action) {
         exit;
 }
 
-if ($resObj->updateStatus((int)$reservationId, $status)) {
+if ($resObj->updateStatus($status, (int)$reservationId)) {
     echo json_encode(['success' => true, 'message' => 'Reservation updated successfully']);
 } else {
     echo json_encode(['success' => false, 'message' => 'Failed to update reservation']);
