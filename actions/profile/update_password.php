@@ -2,8 +2,15 @@
 session_start();
 require_once '../../config/App.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['user_id'])) {
-    $userId = $_SESSION['user_id'];
+// Check if user is logged in
+if (!isset($_SESSION['user'])) {
+    header("Location: ../../index.php");
+    exit();
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Use correct session key
+    $userId = $_SESSION['user']['id'];
     $userObj = new User($userId);
 
     $currentPassword = $_POST['current_password'] ?? '';
