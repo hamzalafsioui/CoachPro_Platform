@@ -190,9 +190,9 @@ $reviews = [
             <div class="flex-1">
                 <!-- Tabs -->
                 <div class="flex border-b border-gray-800 mb-8 overflow-x-auto">
-                    <button class="tab-btn active px-6 py-4 text-font-medium font-outfit text-white whitespace-nowrap" data-target="about-content">About</button>
-                    <button class="tab-btn px-6 py-4 text-font-medium font-outfit text-gray-400 hover:text-white transition-colors whitespace-nowrap" data-target="schedule-content">Schedule</button>
-                    <button class="tab-btn px-6 py-4 text-font-medium font-outfit text-gray-400 hover:text-white transition-colors whitespace-nowrap" data-target="reviews-content">Reviews</button>
+                    <button type="button" class="tab-btn active px-6 py-4 text-font-medium font-outfit text-white whitespace-nowrap" data-target="about-content">About</button>
+                    <button type="button" class="tab-btn px-6 py-4 text-font-medium font-outfit text-gray-400 hover:text-white transition-colors whitespace-nowrap" data-target="schedule-content">Schedule</button>
+                    <button type="button" class="tab-btn px-6 py-4 text-font-medium font-outfit text-gray-400 hover:text-white transition-colors whitespace-nowrap" data-target="reviews-content">Reviews</button>
                 </div>
 
                 <!-- Tab Contents -->
@@ -240,7 +240,7 @@ $reviews = [
                                 </h4>
                                 <div class="schedule-grid">
                                     <?php foreach ($slots as $slot): ?>
-                                        <button class="time-slot px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 text-gray-300 font-medium hover:text-white transition-all hover:border-blue-500/50 active:scale-95"
+                                        <button type="button" class="time-slot px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 text-gray-300 font-medium hover:text-white transition-all hover:border-blue-500/50 active:scale-95"
                                             data-time="<?php echo $slot['time']; ?>"
                                             data-date="<?php echo $slot['date']; ?>"
                                             data-id="<?php echo $slot['id']; ?>">
@@ -278,7 +278,7 @@ $reviews = [
                         <span class="text-2xl font-bold text-white"><?php echo $coach['hourly_rate']; ?></span>
                     </div>
 
-                    <button id="bookSessionBtn" class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20 mb-4 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    <button id="bookSessionBtn" type="button" class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20 mb-4 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                         Select a Time
                     </button>
 
