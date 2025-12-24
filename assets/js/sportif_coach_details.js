@@ -46,7 +46,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Book Button Handler
   if (bookBtn) {
-    bookBtn.addEventListener("click", async () => {
+    bookBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
       if (!selectedSlotId) return;
 
       const urlParams = new URLSearchParams(window.location.search);
