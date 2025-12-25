@@ -4,11 +4,14 @@ class Database
 {
     private static ?PDO $instance = null;
 
+    private function __construct() {}
+
+
     public static function getInstance(): PDO
     {
         if (self::$instance === null) {
             try {
-                
+
                 $host = defined('DB_HOST') ? DB_HOST : 'localhost';
                 $user = defined('DB_USER') ? DB_USER : 'root';
                 $pass = defined('DB_PASS') ? DB_PASS : 'Sa@123456';
