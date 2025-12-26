@@ -1,8 +1,8 @@
-# CoachPro - Your Personal Fitness Journey Starts Here 
+# CoachPro - Your Personal Fitness Journey Starts Here
 
 CoachPro is a premium, professional platform designed to connect certified sports coaches with athletes (sportifs). It simplifies the process of finding specialized trainers, booking sessions, and tracking fitness progress through a modern, intuitive web interface.
 
-##  Key Features
+## Key Features
 
 ### For Athletes (Sportifs)
 
@@ -19,7 +19,7 @@ CoachPro is a premium, professional platform designed to connect certified sport
 - **Reservation Dashboard**: Track upcoming sessions, manage requests, and view performance stats.
 - **Earnings & Stats**: Quick overview of bookings and client engagement.
 
-##  Tech Stack
+## Tech Stack
 
 - **Backend**: PHP 8.x
 - **Database**: MySQL (using MySQLi driver)
@@ -30,35 +30,36 @@ CoachPro is a premium, professional platform designed to connect certified sport
 - **Icons**: Font Awesome 6
 - **Typography**: Google Fonts (Outfit & Inter)
 
-##  Project Structure
+## Project Structure
 
 ```text
 CoachPro/
-├── actions/        # Backend PHP logic for CRUD operations
-├── assets/         # UI resources (CSS, JS, Images)
-├── config/         # Database and system configuration
-├── functions/      # Reusable business logic & database helpers
-├── includes/       # Reusable UI components (header, footer, etc.)
-├── pages/          # Application views (Auth, Coach, Sportif)
-├── db.php          # Database connection handler
-├── db.sql          # Database schema and initial data
-└── index.php       # Landing page
+├── actions/            # Request handlers / controllers
+├── assets/             # CSS, JS, images
+├── classes/            # Application core classes
+├── config/             # App bootstrap & configuration
+├── docs/               # Documentation & diagrams
+├── includes/           # Reusable UI components
+├── pages/              # Application views (Auth, Coach, Sportif)
+├── index.php           # Landing page
+└── .htaccess           # Routing & security (will be added)
+
 ```
 
-##  Installation & Setup
+## Installation & Setup
 
 1. **Clone the repository**:
 
    ```bash
    git clone [repository-url]
-   cd CoachPro
+   cd CoachPro_Platform
    ```
 
 2. **Database Setup**:
 
-   - Create a new MySQL database named `coach_pro`.
+   - Create a new MySQL database named `coachPro`.
    - Import the `db.sql` file into your database.
-   - Update `config/database.php` (or relevant connection file) with your database credentials.
+   - Update `config/App.php` (or relevant connection file) with your database credentials.
 
 3. **Web Server**:
 
@@ -66,7 +67,7 @@ CoachPro/
    - Ensure the server root points to the `CoachPro` directory.
 
 4. **Access**:
-   - Open your browser and navigate to `http://localhost/CoachPro`.
+   - Open your browser and navigate to `http://localhost/CoachPro_platform`.
 
 ## Security
 
@@ -76,9 +77,8 @@ CoachPro implements industry-standard security measures, including:
 - Prepared statements using MySQLi to prevent SQL injection.
 - Role-based access control (RBAC) for Coaches and Athletes.
 
-##  License
+## License
 
 ...
 
 ---
-
