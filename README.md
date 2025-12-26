@@ -67,7 +67,7 @@ CoachPro/
    - Ensure the server root points to the `CoachPro` directory.
 
 4. **Access**:
-   - Open your browser and navigate to `http://localhost/CoachPro_platform`.
+   - Open your browser and navigate to `http://localhost/CoachPro_Platform`.
 
 ## Security
 
