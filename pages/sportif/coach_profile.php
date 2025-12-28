@@ -46,12 +46,9 @@ ksort($availability_by_date);
 // Limit to first 14 days with slots
 $availability_by_date = array_slice($availability_by_date, 0, 14, true);
 
-// Mock Reviews
-$reviews = [
-    ['user' => 'John D.', 'rating' => 5, 'comment' => 'Amazing coach! Pushed me to my limits.', 'date' => '2 days ago'],
-    ['user' => 'Sarah W.', 'rating' => 4, 'comment' => 'Great session, very knowledgeable.', 'date' => '1 week ago'],
-    ['user' => 'Mike P.', 'rating' => 5, 'comment' => 'Best trainer I have ever had.', 'date' => '2 weeks ago']
-];
+// Get real reviews from database
+$reviewObj = new Review();
+$reviews = $reviewObj->getCoachReviews($coach_id);
 ?>
 
 <!DOCTYPE html>
@@ -254,18 +251,31 @@ $reviews = [
                 </div>
 
                 <div id="reviews-content" class="content-section hidden space-y-6 animate-fade-in">
-                    <?php foreach ($reviews as $review): ?>
-                        <div class="glass-panel p-6 rounded-2xl review-card">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-white"><?php echo $review['user']; ?></h4>
-                                <span class="text-xs text-gray-500"><?php echo $review['date']; ?></span>
-                            </div>
-                            <div class="flex items-center gap-1 text-yellow-500 text-sm mb-3">
-                                <?php for ($i = 0; $i < $review['rating']; $i++) echo '<i class="fas fa-star"></i>'; ?>
-                            </div>
-                            <p class="text-gray-300 text-sm"><?php echo $review['comment']; ?></p>
+                    <?php if (empty($reviews)): ?>
+                        <div class="glass-panel p-8 rounded-2xl text-center">
+                            <i class="fas fa-star text-4xl text-gray-600 mb-4 block"></i>
+                            <p class="text-gray-400">No reviews yet. Be the first to review this coach!</p>
                         </div>
-                    <?php endforeach; ?>
+                    <?php else: ?>
+                        <?php foreach ($reviews as $review): ?>
+                            <div class="glass-panel p-6 rounded-2xl review-card">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="font-bold text-white"><?php echo htmlspecialchars($review['client']); ?></h4>
+                                    <span class="text-xs text-gray-500"><?php echo htmlspecialchars($review['date']); ?></span>
+                                </div>
+                                <div class="flex items-center gap-1 text-yellow-500 text-sm mb-3">
+                                    <?php for ($i = 0; $i < 5; $i++): ?>
+                                        <?php if ($i < $review['rating']): ?>
+                                            <i class="fas fa-star"></i>
+                                        <?php else: ?>
+                                            <i class="far fa-star text-gray-600"></i>
+                                        <?php endif; ?>
+                                    <?php endfor; ?>
+                                </div>
+                                <p class="text-gray-300 text-sm"><?php echo htmlspecialchars($review['comment']); ?></p>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
             </div>
 
