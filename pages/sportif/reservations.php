@@ -160,6 +160,14 @@ $reservations = $reservationObj->getBySportif($sportif_id);
                                     <button onclick="handleAction('cancel', <?php echo $res['id']; ?>)" class="flex-1 md:flex-none px-4 py-2 bg-red-600/20 hover:bg-red-600/40 text-red-500 rounded-lg text-sm font-medium transition-colors border border-red-600/30">
                                         Cancel
                                     </button>
+                                <?php elseif ($res['status'] === 'completed' && !$res['has_review']): ?>
+                                    <button onclick="openReviewModal(<?php echo $res['id']; ?>, '<?php echo htmlspecialchars($res['coach'], ENT_QUOTES); ?>')" class="flex-1 md:flex-none px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">
+                                        Write Review
+                                    </button>
+                                <?php elseif ($res['status'] === 'completed' && $res['has_review']): ?>
+                                    <span class="flex-1 md:flex-none px-4 py-2 bg-green-600/20 text-green-400 rounded-lg text-sm font-medium border border-green-600/30">
+                                        Reviewed
+                                    </span>
                                 <?php else: ?>
                                     <button class="flex-1 md:flex-none px-4 py-2 bg-gray-800 text-gray-500 rounded-lg text-sm font-medium cursor-not-allowed">
                                         Details
@@ -172,6 +180,49 @@ $reservations = $reservationObj->getBySportif($sportif_id);
             </div>
         </div>
     </main>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" style="display: none;" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+        <div class="glass-panel rounded-2xl max-w-md w-full p-6 space-y-6">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-bold text-white font-outfit">Write a Review</h3>
+                <button onclick="closeReviewModal()" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <p class="text-gray-300 mb-2">Coach: <span id="reviewCoachName" class="font-semibold text-white"></span></p>
+                </div>
+
+                <div>
+                    <label class="block text-gray-400 text-sm font-medium mb-2">Rating</label>
+                    <div class="flex gap-2" id="starRating">
+                        <i class="fas fa-star text-3xl cursor-pointer text-gray-600 hover:text-yellow-400 transition-colors" data-rating="1"></i>
+                        <i class="fas fa-star text-3xl cursor-pointer text-gray-600 hover:text-yellow-400 transition-colors" data-rating="2"></i>
+                        <i class="fas fa-star text-3xl cursor-pointer text-gray-600 hover:text-yellow-400 transition-colors" data-rating="3"></i>
+                        <i class="fas fa-star text-3xl cursor-pointer text-gray-600 hover:text-yellow-400 transition-colors" data-rating="4"></i>
+                        <i class="fas fa-star text-3xl cursor-pointer text-gray-600 hover:text-yellow-400 transition-colors" data-rating="5"></i>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-400 text-sm font-medium mb-2">Your Review</label>
+                    <textarea id="reviewComment" rows="5" class="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-gray-300 placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors" placeholder="Share your experience with this coach..."></textarea>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="closeReviewModal()" class="flex-1 px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-xl font-medium transition-colors">
+                        Cancel
+                    </button>
+                    <button onclick="submitReview()" class="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white rounded-xl font-medium shadow-lg shadow-blue-500/25 transition-all">
+                        Submit Review
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- JS -->
     <script src="../../assets/js/sportif_reservations.js"></script>
