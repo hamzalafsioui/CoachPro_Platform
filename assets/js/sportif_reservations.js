@@ -94,3 +94,119 @@ function toggleSidebar() {
     overlay.classList.add("hidden");
   }
 }
+
+let currentReservationId = null;
+let selectedRating = 0;
+
+function openReviewModal(reservationId, coachName) {
+  currentReservationId = reservationId;
+  selectedRating = 0;
+  
+  console.log('Opening review modal for reservation:', reservationId, 'Coach:', coachName);
+  
+  document.getElementById('reviewCoachName').textContent = coachName;
+  document.getElementById('reviewComment').value = '';
+  
+  const stars = document.querySelectorAll('#starRating i');
+  stars.forEach(star => {
+    star.classList.remove('text-yellow-400');
+    star.classList.add('text-gray-600');
+  });
+  
+  document.getElementById('reviewModal').style.display = 'flex';
+}
+
+function closeReviewModal() {
+  document.getElementById('reviewModal').style.display = 'none';
+  currentReservationId = null;
+  selectedRating = 0;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('Sportif reservations page loaded');
+  
+  const stars = document.querySelectorAll('#starRating i');
+  console.log('Found', stars.length, 'star elements');
+  
+  stars.forEach(star => {
+    star.addEventListener('click', function() {
+      selectedRating = parseInt(this.dataset.rating);
+      console.log('Star clicked, rating:', selectedRating);
+      
+      stars.forEach((s, index) => {
+        if (index < selectedRating) {
+          s.classList.remove('text-gray-600');
+          s.classList.add('text-yellow-400');
+        } else {
+          s.classList.remove('text-yellow-400');
+          s.classList.add('text-gray-600');
+        }
+      });
+    });
+    
+    star.addEventListener('mouseenter', function() {
+      const rating = parseInt(this.dataset.rating);
+      stars.forEach((s, index) => {
+        if (index < rating) {
+          s.classList.add('text-yellow-400');
+        }
+      });
+    });
+    
+    star.addEventListener('mouseleave', function() {
+      stars.forEach((s, index) => {
+        if (index < selectedRating) {
+          s.classList.add('text-yellow-400');
+          s.classList.remove('text-gray-600');
+        } else {
+          s.classList.remove('text-yellow-400');
+          s.classList.add('text-gray-600');
+        }
+      });
+    });
+  });
+});
+
+async function submitReview() {
+  const comment = document.getElementById('reviewComment').value.trim();
+  
+  if (selectedRating === 0) {
+    alert('Please select a rating');
+    return;
+  }
+  
+  if (comment === '') {
+    alert('Please write a review comment');
+    return;
+  }
+  
+  try {
+    const response = await fetch('../../actions/reviews/create.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        reservation_id: currentReservationId,
+        rating: selectedRating,
+        comment: comment
+      })
+    });
+    
+    const result = await response.json();
+    console.log('Review submission result:', result);
+    
+    if (result.success) {
+      alert(result.message);
+      closeReviewModal();
+      location.reload();
+    } else {
+      console.error('Review submission failed:', result);
+      alert('Error: ' + result.message + (result.debug ? '\n\nDebug info in console' : ''));
+    }
+  } catch (error) {
+    console.error('Error submitting review:', error);
+    alert('An unexpected error occurred while submitting your review. Check console for details.');
+  }
+}
+
