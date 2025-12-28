@@ -1,47 +1,32 @@
 <?php
 require_once '../../config/App.php';
 
-// Mock data
-$page_title = "Client Reviews";
-$overall_rating = 4.8;
-$total_reviews = 124;
-$rating_breakdown = [
-    5 => 85,
-    4 => 25,
-    3 => 10,
-    2 => 3,
-    1 => 1
-];
+// Authentication Check
+if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'coach') {
+    header("Location: ../auth/login.php");
+    exit();
+}
 
-$reviews = [
-    [
-        'id' => 1,
-        'client' => 'Michael Brown',
-        'avatar' => 'MB',
-        'date' => '2 days ago',
-        'rating' => 5,
-        'comment' => 'Absolutely amazing coach! The sessions are intense but very effective. I have seen great results in just one month.',
-        'session_type' => 'HIIT Training'
-    ],
-    [
-        'id' => 2,
-        'client' => 'Jessica Davis',
-        'avatar' => 'JD',
-        'date' => '1 week ago',
-        'rating' => 4,
-        'comment' => 'Great technique advice and very supportive. Would recommend to anyone looking to improve their form.',
-        'session_type' => 'Strength Training'
-    ],
-    [
-        'id' => 3,
-        'client' => 'David Wilson',
-        'avatar' => 'DW',
-        'date' => '2 weeks ago',
-        'rating' => 5,
-        'comment' => 'Best coach I have ever had. The personalized plan is spot on!',
-        'session_type' => 'Cardio Blast'
-    ]
-];
+$userId = $_SESSION['user']['id'];
+$coachObj = new Coach((int)$userId);
+$coachId = $coachObj->getCoachIdByUserId();
+
+if (!$coachId) {
+    $reviews = [];
+    $overall_rating = 0.0;
+    $total_reviews = 0;
+    $rating_breakdown = [5 => 0, 4 => 0, 3 => 0, 2 => 0, 1 => 0];
+} else {
+    $reviewObj = new Review();
+    $reviews = $reviewObj->getCoachReviews($coachId);
+    $stats = $reviewObj->getCoachReviewStats($coachId);
+    
+    $overall_rating = $stats['avg_rating'];
+    $total_reviews = $stats['total_reviews'];
+    $rating_breakdown = $stats['rating_breakdown'];
+}
+
+$page_title = "Client Reviews";
 ?>
 
 <!DOCTYPE html>
@@ -155,22 +140,46 @@ $reviews = [
                                 </div>
 
                                 <p class="text-gray-300 leading-relaxed mb-4">
-                                    "<?php echo $review['comment']; ?>"
+                                    "<?php echo htmlspecialchars($review['comment']); ?>"
                                 </p>
+
+                                <!-- Existing Reply -->
+                                <?php if (!empty($review['reply'])): ?>
+                                    <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mb-4">
+                                        <div class="flex items-start gap-3">
+                                            <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                                                <?php echo strtoupper(substr($coachObj->getFirstname(), 0, 1) . substr($coachObj->getLastname(), 0, 1)); ?>
+                                            </div>
+                                            <div class="flex-1">
+                                                <div class="flex items-center gap-2 mb-1">
+                                                    <span class="text-white font-medium text-sm">You</span>
+                                                    <span class="text-gray-500 text-xs"><?php echo htmlspecialchars($review['reply']['date']); ?></span>
+                                                </div>
+                                                <p class="text-gray-300 text-sm"><?php echo htmlspecialchars($review['reply']['text']); ?></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
 
                                 <!-- Actions -->
                                 <div class="flex justify-between items-center border-t border-gray-700/50 pt-4 actions-area">
-                                    <button onclick="toggleReply(<?php echo $review['id']; ?>)" class="text-sm text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2">
-                                        <i class="fas fa-reply"></i> Reply
-                                    </button>
+                                    <?php if (empty($review['reply'])): ?>
+                                        <button onclick="toggleReply(<?php echo $review['id']; ?>)" class="text-sm text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2">
+                                            <i class="fas fa-reply"></i> Reply
+                                        </button>
+                                    <?php else: ?>
+                                        <button onclick="toggleReply(<?php echo $review['id']; ?>)" class="text-sm text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2">
+                                            <i class="fas fa-edit"></i> Edit Reply
+                                        </button>
+                                    <?php endif; ?>
                                 </div>
 
                                 <!-- Reply Form -->
                                 <div id="reply-form-<?php echo $review['id']; ?>" class="hidden mt-4 bg-gray-900/50 p-4 rounded-xl border border-gray-700/50">
-                                    <textarea class="w-full bg-gray-800 border-none rounded-lg p-3 text-white text-sm focus:ring-1 focus:ring-blue-500 mb-2 placeholder-gray-500" rows="3" placeholder="Write your reply..."></textarea>
+                                    <textarea id="reply-textarea-<?php echo $review['id']; ?>" class="w-full bg-gray-800 border-none rounded-lg p-3 text-white text-sm focus:ring-1 focus:ring-blue-500 mb-2 placeholder-gray-500" rows="3" placeholder="Write your reply..."><?php echo !empty($review['reply']) ? htmlspecialchars($review['reply']['text']) : ''; ?></textarea>
                                     <div class="flex justify-end gap-2">
                                         <button onclick="toggleReply(<?php echo $review['id']; ?>)" class="px-3 py-1.5 text-xs text-gray-400 hover:text-white transition-colors">Cancel</button>
-                                        <button onclick="submitReply(<?php echo $review['id']; ?>)" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded-lg transition-colors">Send Reply</button>
+                                        <button onclick="submitReply(<?php echo $review['id']; ?>)" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded-lg transition-colors"><?php echo !empty($review['reply']) ? 'Update Reply' : 'Send Reply'; ?></button>
                                     </div>
                                 </div>
                             </div>
