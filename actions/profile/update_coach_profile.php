@@ -11,6 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['user'])) {
     $phone = trim($_POST['phone'] ?? '');
     $bio = trim($_POST['bio'] ?? '');
     $experience = (int)($_POST['experience'] ?? 0);
+    $hourly_rate = (float)($_POST['hourly_rate'] ?? 50.00);
 
     $nameParts = explode(' ', $name, 2);
     $firstname = $nameParts[0];
@@ -22,7 +23,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['user'])) {
         'email' => $email,
         'phone' => $phone,
         'bio' => $bio,
-        'experience' => $experience
+        'experience' => $experience,
+        'hourly_rate' => $hourly_rate
     ];
 
     $result = $coachObj->updateProfile(null, $data);
