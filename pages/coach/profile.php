@@ -10,12 +10,14 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'coach') {
 $userId = $_SESSION['user']['id'];
 $coachObj = new Coach((int)$userId);
 
-// The Coach constructor calls load(), so properties are already populated.
+$specialties = $coachObj->getSpecialties();
+$specialtiesString = !empty($specialties) ? implode(', ', $specialties) : 'No specialties assigned';
+
 $coach = [
     'name' => $coachObj->getFirstname() . ' ' . $coachObj->getLastname(),
     'email' => $coachObj->getEmail(),
     'bio' => $coachObj->getBio() ?: 'No bio yet.',
-    'specialties' => 'HIIT, Strength Training, Cardio', // Hardcoded as requested
+    'specialties' => $specialtiesString,
     'phone' => $coachObj->getPhone() ?: '+212xxxxxxxx',
     'experience' => $coachObj->getExperienceYears()
 ];
@@ -115,11 +117,15 @@ $coach = [
                                     <label class="block text-gray-400 text-sm font-medium mb-2">Experience (Years)</label>
                                     <input type="number" name="experience" value="<?php echo htmlspecialchars((string)$coachObj->getExperienceYears()); ?>" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white">
                                 </div>
+                                <div>
+                                    <label class="block text-gray-400 text-sm font-medium mb-2">Hourly Rate ($)</label>
+                                    <input type="number" step="0.01" min="0" name="hourly_rate" value="<?php echo htmlspecialchars((string)$coachObj->getHourlyRate()); ?>" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white">
+                                </div>
                             </div>
 
                             <div>
                                 <label class="block text-gray-400 text-sm font-medium mb-2">Specialties</label>
-                                <input type="text" name="specialties" value="HIIT, Strength Training, Cardio" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white" readonly>
+                                <input type="text" name="specialties" value="<?php echo htmlspecialchars($coach['specialties']); ?>" class="w-full form-input rounded-xl px-4 py-3 placeholder-gray-500 focus:text-white" readonly>
                                 <p class="text-xs text-gray-500 mt-2">Specialties are currently managed by the administration.</p>
                             </div>
 
