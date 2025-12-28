@@ -298,7 +298,8 @@ a.date,
 a.start_time,
 a.end_time,
 s.name AS status_name,
-GROUP_CONCAT(sp.name SEPARATOR ', ') AS sports
+GROUP_CONCAT(sp.name SEPARATOR ', ') AS sports,
+(SELECT COUNT(*) FROM reviews WHERE reservation_id = r.id) as has_review
 FROM reservations r
 JOIN coach_profiles cp ON r.coach_id = cp.id
 JOIN users u ON cp.user_id = u.id
@@ -324,7 +325,8 @@ ORDER BY a.date DESC, a.start_time DESC
                 'date' => $row['date'],
                 'time' => date('H:i', strtotime((string)$row['start_time'])) . ' - ' . date('H:i', strtotime((string)$row['end_time'])),
                 'status' => $row['status_name'],
-                'price' => '$' . number_format((float)$row['price'], 2)
+                'price' => '$' . number_format((float)$row['price'], 2),
+                'has_review' => (int)$row['has_review'] > 0
             ];
         }
 
