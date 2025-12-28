@@ -15,7 +15,7 @@ class Database
                 $host = defined('DB_HOST') ? DB_HOST : 'localhost';
                 $user = defined('DB_USER') ? DB_USER : 'root';
                 $pass = defined('DB_PASS') ? DB_PASS : 'Sa@123456';
-                $name = defined('DB_NAME') ? DB_NAME : 'coachPro';
+                $name = defined('DB_NAME') ? DB_NAME : 'coachProTest';
 
                 $dsn = "mysql:host={$host};dbname={$name};charset=utf8mb4";
 

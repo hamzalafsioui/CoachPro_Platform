@@ -11,5 +11,5 @@ require_once __DIR__ . '/autoload.php';
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', 'Sa@123456');
-define('DB_NAME', 'coachPro');
+define('DB_NAME', 'coachProTest');
 
