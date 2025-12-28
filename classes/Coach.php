@@ -10,6 +10,7 @@ class Coach extends User
     private string $certifications = '';
     private float $rating_avg = 0.0;
     private ?string $photo = null;
+    private float $hourly_rate = 50.00;
 
     // Override 
     public function load(int $userId): bool
@@ -26,6 +27,7 @@ class Coach extends User
                 $this->certifications = $data['certifications'] ?? '';
                 $this->rating_avg = (float)($data['rating_avg'] ?? 0.0);
                 $this->photo = $data['photo'] ?? null;
+                $this->hourly_rate = (float)($data['hourly_rate'] ?? 50.00);
             }
             return true;
         }
@@ -57,6 +59,10 @@ class Coach extends User
     {
         return $this->photo;
     }
+    public function getHourlyRate(): float
+    {
+        return $this->hourly_rate;
+    }
 
     // Setters
     public function setBio(string $bio): void
@@ -75,7 +81,10 @@ class Coach extends User
     {
         $this->photo = $photo;
     }
-
+    public function setHourlyRate(float $rate): void
+    {
+        $this->hourly_rate = $rate;
+    }
 
     public function getProfile(?int $userId = null): ?array
     {
@@ -109,6 +118,7 @@ cp.experience_years,
 cp.certifications,
 cp.rating_avg,
 cp.photo,
+cp.hourly_rate,
 GROUP_CONCAT(s.name SEPARATOR ', ') as specialties,
 (SELECT COUNT(*) FROM reviews r JOIN reservations res ON r.reservation_id = res.id WHERE res.coach_id = cp.id) as review_count
 FROM coach_profiles cp
@@ -132,7 +142,7 @@ GROUP BY cp.id
                 'name' => $row['firstname'] . ' ' . $row['lastname'],
                 'rating' => (float)$row['rating_avg'],
                 'reviews_count' => (int)$row['review_count'],
-                'hourly_rate' => '$50.00',
+                'hourly_rate' => '$' . number_format((float)($row['hourly_rate'] ?? 50.00), 2),
                 'specialties' => $row['specialties'] ? explode(', ', $row['specialties']) : ['Training'],
                 'bio' => $row['bio'] ?: 'No bio available.',
                 'certifications' => $row['certifications'] ? explode(', ', $row['certifications']) : ['Certified Professional'],
@@ -153,6 +163,31 @@ GROUP BY cp.id
         $stmt->execute([$id]);
         $row = $stmt->fetch();
         return $row ? (int)$row['id'] : null;
+    }
+
+    /**
+     * Get coach specialties/sports
+     */
+    public function getSpecialties(?int $coachId = null): array
+    {
+        $id = $coachId ?? $this->coach_id;
+        if (!$id) return [];
+
+        $stmt = $this->db->prepare("
+            SELECT s.name 
+            FROM sports s
+            JOIN coach_sports cs ON s.id = cs.sport_id
+            WHERE cs.coach_id = ?
+            ORDER BY s.name
+        ");
+        $stmt->execute([$id]);
+        
+        $specialties = [];
+        while ($row = $stmt->fetch()) {
+            $specialties[] = $row['name'];
+        }
+        
+        return $specialties;
     }
 
 
@@ -193,11 +228,11 @@ GROUP BY cp.id
             $exists = $stmt->fetch();
 
             if ($exists) {
-                $stmt = $this->db->prepare("UPDATE coach_profiles SET bio = ?, experience_years = ? WHERE user_id = ?");
-                $success = $stmt->execute([$data['bio'] ?? '', $data['experience'] ?? 0, $id]);
+                $stmt = $this->db->prepare("UPDATE coach_profiles SET bio = ?, experience_years = ?, hourly_rate = ? WHERE user_id = ?");
+                $success = $stmt->execute([$data['bio'] ?? '', $data['experience'] ?? 0, $data['hourly_rate'] ?? 50.00, $id]);
             } else {
-                $stmt = $this->db->prepare("INSERT INTO coach_profiles (user_id, bio, experience_years) VALUES (?, ?, ?)");
-                $success = $stmt->execute([$id, $data['bio'] ?? '', $data['experience'] ?? 0]);
+                $stmt = $this->db->prepare("INSERT INTO coach_profiles (user_id, bio, experience_years, hourly_rate) VALUES (?, ?, ?, ?)");
+                $success = $stmt->execute([$id, $data['bio'] ?? '', $data['experience'] ?? 0, $data['hourly_rate'] ?? 50.00]);
             }
 
             if (!$success) {
@@ -269,57 +304,91 @@ GROUP BY cp.id
     {
         if (!$this->coach_id) return [];
 
+        // Try to get clients from coach_clients table first (new way)
         $sql = "
             SELECT 
                 u.id, 
                 u.firstname, 
                 u.lastname, 
                 u.email,
+                cc.status,
+                cc.progress,
+                cc.joined_at,
+                cp.name as plan_name,
                 MAX(a.date) as last_session_date
             FROM users u
-            JOIN reservations r ON u.id = r.sportif_id
-            JOIN availabilities a ON r.availability_id = a.id
-            WHERE r.coach_id = ?
-            GROUP BY u.id
-            ORDER BY last_session_date DESC
+            INNER JOIN coach_clients cc ON u.id = cc.sportif_id AND cc.coach_id = ?
+            LEFT JOIN client_plans cp ON cc.plan_id = cp.id
+            LEFT JOIN reservations r ON u.id = r.sportif_id AND r.coach_id = cc.coach_id
+            LEFT JOIN availabilities a ON r.availability_id = a.id
+            GROUP BY u.id, cc.status, cc.progress, cc.joined_at, cp.name
+            ORDER BY last_session_date DESC, cc.joined_at DESC
         ";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$this->coach_id]);
+        $rows = $stmt->fetchAll();
+
+        // If no coach_clients records exist, fall back to getting from reservations
+        if (empty($rows)) {
+            $sql = "
+                SELECT DISTINCT
+                    u.id, 
+                    u.firstname, 
+                    u.lastname, 
+                    u.email,
+                    MAX(a.date) as last_session_date,
+                    MIN(r.created_at) as first_reservation
+                FROM users u
+                JOIN reservations r ON u.id = r.sportif_id
+                LEFT JOIN availabilities a ON r.availability_id = a.id
+                WHERE r.coach_id = ?
+                GROUP BY u.id
+                ORDER BY last_session_date DESC
+            ";
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$this->coach_id]);
+            $rows = $stmt->fetchAll();
+        }
 
         $clients = [];
-        $plans = ['Premium - Personal Training', 'Standard - HIIT', 'Basic - Strength', 'Premium - Cardio'];
-        $statuses = ['active', 'inactive'];
 
-        while ($row = $stmt->fetch()) {
-            srand((int)$row['id']);
-            $plan = $plans[array_rand($plans)];
-            $progress = rand(10, 100);
-            $status = $statuses[rand(0, 1)];
-            srand();
+        foreach ($rows as $row) {
+            // Format last session date
+            $lastSessionDisplay = 'No sessions yet';
+            if ($row['last_session_date']) {
+                $lastSessionTime = strtotime((string)$row['last_session_date']);
+                $today = strtotime(date('Y-m-d'));
+                $diffDays = floor(($today - $lastSessionTime) / (60 * 60 * 24));
 
-            $lastSessionTime = strtotime((string)$row['last_session_date']);
-            $today = strtotime(date('Y-m-d'));
-            $diffDays = floor(($today - $lastSessionTime) / (60 * 60 * 24));
+                if ($diffDays == 0) {
+                    $lastSessionDisplay = 'Today';
+                } elseif ($diffDays == 1) {
+                    $lastSessionDisplay = 'Yesterday';
+                } elseif ($diffDays < 30) {
+                    $lastSessionDisplay = $diffDays . ' days ago';
+                } else {
+                    $lastSessionDisplay = date('M j, Y', $lastSessionTime);
+                }
+            }
 
-            if ($diffDays == 0) {
-                $lastSessionDisplay = 'Today';
-            } elseif ($diffDays == 1) {
-                $lastSessionDisplay = 'Yesterday';
-            } elseif ($diffDays < 30) {
-                $lastSessionDisplay = $diffDays . ' days ago';
-            } else {
-                $lastSessionDisplay = date('M j, Y', $lastSessionTime);
+            // Format join date - use joined_at from coach_clients, or first_reservation as fallback
+            $joinDate = 'N/A';
+            if (!empty($row['joined_at'])) {
+                $joinDate = date('M j, Y', strtotime((string)$row['joined_at']));
+            } elseif (!empty($row['first_reservation'])) {
+                $joinDate = date('M j, Y', strtotime((string)$row['first_reservation']));
             }
 
             $clients[] = [
                 'id' => (int)$row['id'],
                 'name' => $row['firstname'] . ' ' . $row['lastname'],
                 'avatar' => strtoupper(substr((string)$row['firstname'], 0, 1) . substr((string)$row['lastname'], 0, 1)),
-                'status' => $status,
-                'plan' => $plan,
-                'join_date' => date('M j, Y', strtotime('-' . rand(1, 120) . ' days')),
-                'progress' => $progress,
+                'status' => $row['status'] ?? 'active',
+                'plan' => $row['plan_name'] ?? 'No plan assigned',
+                'join_date' => $joinDate,
+                'progress' => (int)($row['progress'] ?? 0),
                 'last_session' => $lastSessionDisplay,
                 'email' => $row['email']
             ];
