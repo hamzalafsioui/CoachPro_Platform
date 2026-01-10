@@ -1,0 +1,5 @@
+
+# Set custom 404 page
+ErrorDocument 404 /CoachPro_Platform/errors/404.php
+
+
