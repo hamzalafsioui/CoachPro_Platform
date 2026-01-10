@@ -20,6 +20,12 @@ if (!$coachId) {
     exit;
 }
 
-$reservations = $resObj->getByCoach($coachId);
+if (isset($_GET['month']) && isset($_GET['year'])) {
+    $month = (int)$_GET['month'];
+    $year = (int)$_GET['year'];
+    $reservations = $resObj->getReservationsByMonth($coachId, $month, $year);
+} else {
+    $reservations = $resObj->getByCoach($coachId);
+}
 
 echo json_encode(['success' => true, 'data' => $reservations]);
