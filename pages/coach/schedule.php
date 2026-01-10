@@ -90,22 +90,22 @@ $page_title = "My Schedule";
             <div class="flex items-center gap-6 text-sm">
                 <div class="flex items-center gap-2">
                     <div class="w-3 h-3 rounded-full bg-blue-500"></div>
-                    <span class="text-gray-400">Personal Training</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 rounded-full bg-rose-500"></div>
-                    <span class="text-gray-400">HIIT Group</span>
+                    <span class="text-gray-400">Confirmed</span>
                 </div>
                 <div class="flex items-center gap-2">
                     <div class="w-3 h-3 rounded-full bg-purple-500"></div>
-                    <span class="text-gray-400">Cardio Blast</span>
+                    <span class="text-gray-400">Pending</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-rose-500"></div>
+                    <span class="text-gray-400">Cancelled</span>
                 </div>
             </div>
         </div>
     </main>
 
     <!-- Specific JS -->
-    <script src="../../assets/js/coach_schedule.js"></script>
+    <script src="../../assets/js/coach_schedule.js?v=<?php echo time(); ?>"></script>
 </body>
 
 </html>
