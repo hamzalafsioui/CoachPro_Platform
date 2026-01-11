@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram name="CoachPro Use Case" id="use-case-diagram">
-        <mxGraphModel dx="1165" dy="662" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+        <mxGraphModel dx="620" dy="585" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -73,12 +73,6 @@
                 <mxCell id="actor-system" value="Système&#xa;Email" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#f5f5f5;strokeColor=#666666;" parent="1" vertex="1">
                     <mxGeometry x="1090" y="120" width="60" height="120" as="geometry"/>
                 </mxCell>
-                <mxCell id="assoc-sportif-inscription" value="" style="endArrow=none;html=1;exitX=1;exitY=0.3333333333333333;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="actor-sportif" target="uc-inscription" edge="1">
-                    <mxGeometry width="50" height="50" relative="1" as="geometry">
-                        <mxPoint x="400" y="400" as="sourcePoint"/>
-                        <mxPoint x="450" y="350" as="targetPoint"/>
-                    </mxGeometry>
-                </mxCell>
                 <mxCell id="assoc-sportif-connexion" value="" style="endArrow=none;html=1;exitX=1;exitY=0.3333333333333333;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="actor-sportif" target="uc-connexion" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="400" y="400" as="sourcePoint"/>
@@ -121,12 +115,6 @@
                         <mxPoint x="450" y="350" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="assoc-coach-inscription" value="" style="endArrow=none;html=1;exitX=0;exitY=0.3333333333333333;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="actor-coach" target="uc-inscription" edge="1">
-                    <mxGeometry width="50" height="50" relative="1" as="geometry">
-                        <mxPoint x="400" y="400" as="sourcePoint"/>
-                        <mxPoint x="450" y="350" as="targetPoint"/>
-                    </mxGeometry>
-                </mxCell>
                 <mxCell id="assoc-coach-demandes" value="" style="endArrow=none;html=1;exitX=0;exitY=0.3333333333333333;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="actor-coach" target="uc-gerer-demandes" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="400" y="400" as="sourcePoint"/>
@@ -157,19 +145,19 @@
                         <mxPoint x="450" y="350" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="include-gerer-consulter" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="endArrow=open;endSize=12;dashed=1;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="uc-gerer-reservations" target="uc-consulter-historique" edge="1">
+                <mxCell id="include-gerer-consulter" value="&amp;lt;&amp;lt;Extend&amp;gt;&amp;gt;" style="endArrow=open;endSize=12;dashed=1;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="uc-gerer-reservations" target="uc-consulter-historique" edge="1">
                     <mxGeometry width="160" relative="1" as="geometry">
                         <mxPoint x="400" y="400" as="sourcePoint"/>
                         <mxPoint x="560" y="400" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="include-gerer-modifier" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="endArrow=open;endSize=12;dashed=1;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="uc-gerer-reservations" target="uc-modifier-reservation" edge="1">
+                <mxCell id="include-gerer-modifier" value="&amp;lt;&amp;lt;Extend&amp;gt;&amp;gt;" style="endArrow=open;endSize=12;dashed=1;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="uc-gerer-reservations" target="uc-modifier-reservation" edge="1">
                     <mxGeometry width="160" relative="1" as="geometry">
                         <mxPoint x="400" y="400" as="sourcePoint"/>
                         <mxPoint x="560" y="400" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="include-gerer-annuler" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="endArrow=open;endSize=12;dashed=1;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="uc-gerer-reservations" target="uc-annuler-reservation" edge="1">
+                <mxCell id="include-gerer-annuler" value="&amp;lt;&amp;lt;Extend&amp;gt;&amp;gt;" style="endArrow=open;endSize=12;dashed=1;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="uc-gerer-reservations" target="uc-annuler-reservation" edge="1">
                     <mxGeometry width="160" relative="1" as="geometry">
                         <mxPoint x="400" y="400" as="sourcePoint"/>
                         <mxPoint x="560" y="400" as="targetPoint"/>
@@ -187,88 +175,76 @@
                         <mxPoint x="560" y="400" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="extend-connexion-reset" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="endArrow=open;endSize=12;dashed=1;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="uc-connexion" target="uc-reset-password" edge="1">
-                    <mxGeometry width="160" relative="1" as="geometry">
-                        <mxPoint x="400" y="400" as="sourcePoint"/>
-                        <mxPoint x="560" y="400" as="targetPoint"/>
-                    </mxGeometry>
-                </mxCell>
                 <mxCell id="assoc-system-reset" value="" style="endArrow=open;endSize=12;dashed=1;html=1;exitX=0.5;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0;entryDx=0;entryDy=0;" parent="1" source="actor-system" target="uc-reset-password" edge="1">
                     <mxGeometry width="160" relative="1" as="geometry">
                         <mxPoint x="400" y="400" as="sourcePoint"/>
                         <mxPoint x="560" y="400" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="3" value="Admin&lt;div&gt;&lt;br/&gt;&lt;/div&gt;" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+                <mxCell id="3" value="Admin&lt;div&gt;&lt;br/&gt;&lt;/div&gt;" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
                     <mxGeometry x="60" y="210" width="60" height="120" as="geometry"/>
                 </mxCell>
-                <mxCell id="4" value="" style="endArrow=none;html=1;entryX=0.017;entryY=0.376;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.867;exitY=0.34;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="3" target="uc-connexion">
-                    <mxGeometry width="50" height="50" relative="1" as="geometry">
-                        <mxPoint x="20" y="532.5" as="sourcePoint"/>
-                        <mxPoint x="160" y="107.5" as="targetPoint"/>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="7" value="" style="endArrow=none;html=1;entryX=0.014;entryY=0.64;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.887;exitY=0.32;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="3" target="uc-consulter-profils">
+                <mxCell id="7" value="" style="endArrow=none;html=1;entryX=0.014;entryY=0.64;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.887;exitY=0.32;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="3" target="uc-consulter-profils" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="210" y="306" as="sourcePoint"/>
                         <mxPoint x="372" y="179" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="8" value="" style="endArrow=none;html=1;entryX=0.031;entryY=0.333;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.9;exitY=0.32;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="3" target="uc-reserver-seance">
+                <mxCell id="8" value="" style="endArrow=none;html=1;entryX=0.031;entryY=0.333;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.9;exitY=0.32;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="3" target="uc-reserver-seance" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="200" y="300" as="sourcePoint"/>
                         <mxPoint x="372" y="179" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="9" value="" style="endArrow=none;html=1;entryX=0.02;entryY=0.293;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.833;exitY=0.333;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="3" target="uc-gerer-reservations">
+                <mxCell id="9" value="" style="endArrow=none;html=1;entryX=0.02;entryY=0.293;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.833;exitY=0.333;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="3" target="uc-gerer-reservations" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="200" y="300" as="sourcePoint"/>
                         <mxPoint x="374" y="350" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="10" value="" style="endArrow=none;html=1;entryX=0.026;entryY=0.347;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.833;exitY=0.333;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="3" target="uc-maj-infos-perso">
+                <mxCell id="10" value="" style="endArrow=none;html=1;entryX=0.026;entryY=0.347;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.833;exitY=0.333;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="3" target="uc-maj-infos-perso" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="160" y="290" as="sourcePoint"/>
                         <mxPoint x="373" y="428" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="11" value="" style="endArrow=none;html=1;entryX=0.026;entryY=0.387;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.867;exitY=0.327;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="3" target="uc-accepter-reservation">
+                <mxCell id="11" value="" style="endArrow=none;html=1;entryX=0.026;entryY=0.387;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.867;exitY=0.327;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="3" target="uc-accepter-reservation" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="154" y="288" as="sourcePoint"/>
                         <mxPoint x="374" y="350" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="12" value="" style="endArrow=none;html=1;entryX=0.009;entryY=0.38;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.867;exitY=0.313;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="3" target="uc-refuser-reservation">
+                <mxCell id="12" value="" style="endArrow=none;html=1;entryX=0.009;entryY=0.38;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.867;exitY=0.313;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="3" target="uc-refuser-reservation" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="152" y="289" as="sourcePoint"/>
                         <mxPoint x="790" y="270" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="13" value="" style="endArrow=none;html=1;entryX=0.049;entryY=0.287;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.867;exitY=0.327;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="3" target="uc-gerer-profil">
+                <mxCell id="13" value="" style="endArrow=none;html=1;entryX=0.049;entryY=0.287;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.867;exitY=0.327;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="3" target="uc-gerer-profil" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="152" y="308" as="sourcePoint"/>
                         <mxPoint x="791" y="343" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="14" value="" style="endArrow=none;html=1;entryX=0.054;entryY=0.233;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.893;exitY=0.307;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="3" target="uc-gerer-disponibilites">
+                <mxCell id="14" value="" style="endArrow=none;html=1;entryX=0.054;entryY=0.233;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.893;exitY=0.307;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="3" target="uc-gerer-disponibilites" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="152" y="309" as="sourcePoint"/>
                         <mxPoint x="797" y="417" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="15" value="" style="endArrow=none;html=1;entryX=0.049;entryY=0.633;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.833;exitY=0.333;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="3" target="uc-consulter-stats">
+                <mxCell id="15" value="" style="endArrow=none;html=1;entryX=0.049;entryY=0.633;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.833;exitY=0.333;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="3" target="uc-consulter-stats" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="154" y="307" as="sourcePoint"/>
                         <mxPoint x="798" y="494" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="16" value="" style="endArrow=none;html=1;entryX=0.071;entryY=0.167;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.833;exitY=0.333;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="3" target="uc-consulter-avis">
+                <mxCell id="16" value="" style="endArrow=none;html=1;entryX=0.071;entryY=0.167;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.833;exitY=0.333;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="3" target="uc-consulter-avis" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="164" y="317" as="sourcePoint"/>
                         <mxPoint x="797" y="598" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="17" value="" style="endArrow=none;html=1;entryX=0.028;entryY=0.349;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.83;exitY=0.301;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="3" target="uc-generer-pdf">
+                <mxCell id="17" value="" style="endArrow=none;html=1;entryX=0.028;entryY=0.349;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.83;exitY=0.301;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="3" target="uc-generer-pdf" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="100" y="250" as="sourcePoint"/>
                         <mxPoint x="374" y="511" as="targetPoint"/>
