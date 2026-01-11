@@ -92,7 +92,7 @@ class Reservation
         $this->price = $price;
     }
 
-   
+
     public function updateStatus(string $statusName, ?int $reservationId = null): bool
     {
         $id = $reservationId ?? $this->id;
@@ -116,7 +116,7 @@ class Reservation
         return $success;
     }
 
-   
+
     public function delete(?int $reservationId = null): bool
     {
         $id = $reservationId ?? $this->id;
@@ -126,7 +126,7 @@ class Reservation
         return $stmt->execute([$id]);
     }
 
- 
+
     public function create(int $sportifId, int $coachId, int $availabilityId, float $price)
     {
         try {
@@ -183,7 +183,7 @@ VALUES (?, ?, ?, ?, ?)
         }
     }
 
-   
+
     public function getCoachUpcomingSessions(int $coachId, int $limit = 3): array
     {
         $sql = "
@@ -240,7 +240,7 @@ LIMIT " . (int)$limit;
         return $sessions;
     }
 
-   
+
     public function getByCoach(int $coachId): array
     {
         $sql = "
@@ -285,7 +285,52 @@ ORDER BY a.date DESC, a.start_time DESC
         return $reservations;
     }
 
-   
+    public function getReservationsByMonth(int $coachId, int $month, int $year): array
+    {
+        $sql = "
+SELECT
+r.id,
+r.price,
+u.firstname,
+u.lastname,
+a.date,
+a.start_time,
+a.end_time,
+s.name AS status_name,
+GROUP_CONCAT(sp.name SEPARATOR ', ') AS sports
+FROM reservations r
+JOIN users u ON r.sportif_id = u.id
+JOIN availabilities a ON r.availability_id = a.id
+JOIN statuses s ON r.status_id = s.id
+LEFT JOIN coach_sports cs ON cs.coach_id = r.coach_id
+LEFT JOIN sports sp ON sp.id = cs.sport_id
+WHERE r.coach_id = ?
+AND MONTH(a.date) = ? 
+AND YEAR(a.date) = ?
+GROUP BY r.id
+ORDER BY a.date ASC, a.start_time ASC
+";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$coachId, $month, $year]);
+
+        $reservations = [];
+        while ($row = $stmt->fetch()) {
+            $reservations[] = [
+                'id' => (int)$row['id'],
+                'client' => $row['firstname'] . ' ' . $row['lastname'],
+                'type' => $row['sports'] ?: 'Training',
+                'date' => $row['date'],
+                'time' => date('H:i', strtotime((string)$row['start_time'])) . ' - ' . date('H:i', strtotime((string)$row['end_time'])),
+                'status' => $row['status_name'],
+                'price' => '$' . number_format((float)$row['price'], 2)
+            ];
+        }
+
+        return $reservations;
+    }
+
+
     public function getBySportif(int $sportifId): array
     {
         $sql = "
