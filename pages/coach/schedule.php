@@ -18,7 +18,7 @@ $page_title = "My Schedule";
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="../../assets/css/coach_schedule.css">
+    <link rel="stylesheet" href="../../assets/css/coach_schedule.css?v=<?php echo time(); ?>">
 
     <!-- Global Tailwind Config -->
     <script src="https://cdn.tailwindcss.com"></script>
