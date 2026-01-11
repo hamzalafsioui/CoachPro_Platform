@@ -1,37 +1,38 @@
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("Schedule loaded");
-  renderCalendar();
+  console.log("Schedule loaded - Version 2.0 (Cache Cleared)");
+  const today = new Date();
+  fetchReservations(today.getMonth() + 1, today.getFullYear());
 });
 
-// Mock data
-const events = [
-  {
-    date: "2023-12-05",
-    title: "John Doe - PT",
-    type: "personal",
-    time: "10:00 AM",
-  },
-  { date: "2023-12-05", title: "Group HIIT", type: "hiit", time: "02:00 PM" },
-  {
-    date: "2023-12-08",
-    title: "Sarah Smith - Cardio",
-    type: "cardio",
-    time: "09:00 AM",
-  },
-  {
-    date: "2023-12-12",
-    title: "Mike Johnson - PT",
-    type: "personal",
-    time: "11:00 AM",
-  },
-  { date: "2023-12-15", title: "Group HIIT", type: "hiit", time: "04:00 PM" },
-  {
-    date: "2023-12-20",
-    title: "Emma Wilson - PT",
-    type: "personal",
-    time: "01:00 PM",
-  },
-];
+let events = [];
+
+async function fetchReservations(month, year) {
+  try {
+    console.log("start");
+
+    const response = await fetch(
+      `../../actions/reservations/read.php?month=${month}&year=${year}`
+    );
+    const result = await response.json();
+
+    if (result.success) {
+      console.log(result.success);
+
+      events = result.data.map((res) => ({
+        date: res.date,
+        title: `${res.client} - ${res.type}`,
+        type: res.status.toLowerCase(),
+        time: res.time,
+        status: res.status,
+      }));
+      console.log(events);
+
+      renderCalendar();
+    }
+  } catch (error) {
+    console.error("Error fetching reservations:", error);
+  }
+}
 
 let currentDate = new Date();
 
@@ -43,7 +44,8 @@ function renderCalendar() {
 
   // Clear existing day cells
   const dayCells = document.querySelectorAll(".calendar-day");
-  dayCells.forEach((cell) => cell.remove());
+  
+  calendarGrid.innerHTML = ""; 
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -93,7 +95,7 @@ function renderCalendar() {
     spanNum.classList.add("text-sm", "font-semibold", "text-gray-400");
     spanNum.textContent = i;
 
-    // Add button to add event (mock)
+    // Add button to add event 
     const addBtn = document.createElement("button");
     addBtn.innerHTML = '<i class="fas fa-plus text-xs"></i>';
     addBtn.classList.add(
@@ -117,6 +119,8 @@ function renderCalendar() {
       "0"
     )}-${String(i).padStart(2, "0")}`;
 
+
+
     const today = new Date();
     if (
       i === today.getDate() &&
@@ -132,7 +136,10 @@ function renderCalendar() {
       const evtDiv = document.createElement("div");
       evtDiv.classList.add("event-item", `event-${evt.type}`);
       evtDiv.innerHTML = `<span class="font-bold">${evt.time}</span> ${evt.title}`;
-      evtDiv.onclick = () => alert(`Event Details:\n${evt.title}\n${evt.time}`);
+      evtDiv.onclick = () =>
+        alert(
+          `Event Details:\n${evt.title}\nStatus: ${evt.status}\nTime: ${evt.time}`
+        );
       dayDiv.appendChild(evtDiv);
     });
 
@@ -153,12 +160,13 @@ function renderCalendar() {
 
 function prevMonth() {
   currentDate.setMonth(currentDate.getMonth() - 1);
-  renderCalendar();
+  // Fetch for the new month (getMonth() is 0-indexed, so add 1)
+  fetchReservations(currentDate.getMonth() + 1, currentDate.getFullYear());
 }
 
 function nextMonth() {
   currentDate.setMonth(currentDate.getMonth() + 1);
-  renderCalendar();
+  fetchReservations(currentDate.getMonth() + 1, currentDate.getFullYear());
 }
 
 function toggleSidebar() {
